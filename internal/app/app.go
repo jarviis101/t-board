@@ -1,10 +1,9 @@
 package app
 
 import (
-	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"t-mail/internal/controller/http"
-	"t-mail/internal/infrastructure/repository/mongo"
-	"t-mail/internal/pkg/database"
+	repo "t-mail/internal/infrastructure/repository/mongo"
 	"t-mail/internal/pkg/hasher"
 	"t-mail/internal/usecase/user"
 )
@@ -14,16 +13,16 @@ type Application interface {
 }
 
 type application struct {
+	database *mongo.Database
 }
 
-func CreateApplication() Application {
-	return &application{}
+func CreateApplication(database *mongo.Database) Application {
+	return &application{database}
 }
 
 func (a *application) Run() error {
-	db := database.CreateDatabaseConnection(context.Background())
 	m := hasher.CreateManager()
-	userRepository := mongo.CreateUserRepository(db.Collection("users"))
+	userRepository := repo.CreateUserRepository(a.database.Collection("users"))
 	userCreator := user.CreateCreator(userRepository, m)
 	userUseCase := user.CreateUserUseCase(userCreator)
 	http.RunServer(userUseCase)

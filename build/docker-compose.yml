@@ -4,8 +4,10 @@ services:
   database:
     image: mongo:5.0
     container_name: database
-    env_file:
-      - ../.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=s3cr3t
+      - MONGO_INITDB_DATABASE=t-mail
     ports:
       - "27017:27017"
     volumes:
