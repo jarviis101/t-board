@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"t-mail/internal/entity"
@@ -32,4 +33,19 @@ func (r *userRepository) Store(ctx context.Context, u *entity.User) error {
 	}
 
 	return nil
+}
+
+func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+	var user *User
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.User{
+		ID:       user.ID.Hex(),
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+	}, nil
 }
