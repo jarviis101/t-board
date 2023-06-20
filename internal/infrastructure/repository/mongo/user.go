@@ -49,3 +49,31 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.
 		Password: user.Password,
 	}, nil
 }
+
+func (r *userRepository) GetById(ctx context.Context, id string) (*entity.User, error) {
+	user, err := r.getById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.User{
+		ID:       user.ID.Hex(),
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+	}, nil
+}
+
+func (r *userRepository) getById(ctx context.Context, id string) (*User, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	var user *User
+	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

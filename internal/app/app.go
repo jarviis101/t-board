@@ -29,7 +29,8 @@ func (a *application) Run() error {
 	userRepository := repo.CreateUserRepository(a.database.Collection("users"))
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
-	userUseCase := user.CreateUserUseCase(userCreator, userAuthService)
+	userFinder := user.CreateFinder(userRepository)
+	userUseCase := user.CreateUserUseCase(userCreator, userAuthService, userFinder)
 	httpValidator := http_validator.CreateValidator(validator.New())
 
 	http.RunServer(userUseCase, httpValidator)

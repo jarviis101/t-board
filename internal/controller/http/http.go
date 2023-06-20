@@ -18,7 +18,7 @@ func RunServer(useCase usecase.UserUseCase, v *validator.Validator) {
 	e.Use(middleware.Logger())
 
 	collectRESTRoutes(e, v, useCase)
-	collectGraphQLRoutes(e)
+	collectGraphQLRoutes(e, useCase)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -29,8 +29,9 @@ func collectRESTRoutes(e *echo.Echo, v *validator.Validator, useCase usecase.Use
 	userRouter.PopulateRoutes()
 }
 
-func collectGraphQLRoutes(e *echo.Echo) {
-	c := graph.Config{Resolvers: &graph.Resolver{}}
+func collectGraphQLRoutes(e *echo.Echo, useCase usecase.UserUseCase) {
+	resolver := graph.CreateResolver(useCase)
+	c := graph.Config{Resolvers: resolver}
 	c.Directives.Auth = directives.Auth
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(c))
 	pg := playground.Handler("GraphQL playground", "/query")

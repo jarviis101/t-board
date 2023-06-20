@@ -9,10 +9,11 @@ import (
 type userUseCase struct {
 	creator     Creator
 	authService AuthService
+	finder      Finder
 }
 
-func CreateUserUseCase(creator Creator, authService AuthService) usecase.UserUseCase {
-	return &userUseCase{creator, authService}
+func CreateUserUseCase(creator Creator, authService AuthService, finder Finder) usecase.UserUseCase {
+	return &userUseCase{creator, authService, finder}
 }
 
 func (uc *userUseCase) Register(ctx context.Context, name, email, password string) error {
@@ -34,4 +35,8 @@ func (uc *userUseCase) Login(ctx context.Context, email, password string) (strin
 	}
 
 	return token, nil
+}
+
+func (uc *userUseCase) Get(ctx context.Context, id string) (*entity.User, error) {
+	return uc.finder.Find(ctx, id)
 }

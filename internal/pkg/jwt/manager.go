@@ -28,7 +28,8 @@ type UserClaims struct {
 func (j *jwtManager) Generate(user *entity.User) (string, error) {
 	claims := UserClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(15 * time.Minute)},
+			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(1 * time.Hour)},
+			IssuedAt:  &jwt.NumericDate{Time: time.Now()},
 		},
 		UserId: user.ID,
 	}

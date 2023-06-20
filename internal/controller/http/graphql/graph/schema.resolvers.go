@@ -6,12 +6,19 @@ package graph
 
 import (
 	"context"
+	"t-mail/internal/controller/http/graphql/directives"
 	"t-mail/internal/controller/http/graphql/graph/model"
 )
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	return &model.User{}, nil
+	currentUserId := ctx.Value(directives.AuthKey).(string)
+	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{ID: currentUser.ID, Email: currentUser.Email, Name: currentUser.Name}, nil
 }
 
 // Query returns QueryResolver implementation.
