@@ -16,6 +16,7 @@ func RunServer(useCase usecase.UserUseCase, v *validator.Validator) {
 	e := echo.New()
 	e.Validator = v
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	collectRESTRoutes(e, v, useCase)
 	collectGraphQLRoutes(e, useCase)
