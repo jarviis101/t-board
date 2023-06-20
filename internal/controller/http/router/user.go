@@ -14,23 +14,22 @@ type RouteManager interface {
 }
 
 type userRouteManager struct {
-	router    *echo.Router
+	group     *echo.Group
 	validator *validator.Validator
 	useCase   usecase.UserUseCase
 }
 
 func CreateUserRouteManager(
-	r *echo.Router,
+	g *echo.Group,
 	v *validator.Validator,
 	useCase usecase.UserUseCase,
 ) RouteManager {
-	return &userRouteManager{r, v, useCase}
+	return &userRouteManager{g, v, useCase}
 }
 
 func (r *userRouteManager) PopulateRoutes() {
-	r.router.Add("POST", "/register", r.register)
-	r.router.Add("POST", "/login", r.login)
-	r.router.Add("GET", "/me", r.me)
+	r.group.Add("POST", "/register", r.register)
+	r.group.Add("POST", "/login", r.login)
 }
 
 func (r *userRouteManager) register(c echo.Context) error {
@@ -64,8 +63,4 @@ func (r *userRouteManager) login(c echo.Context) error {
 
 	response := &types.LoginUserResponse{Token: token}
 	return c.JSON(http.StatusOK, response)
-}
-
-func (r *userRouteManager) me(c echo.Context) error {
-	return nil
 }

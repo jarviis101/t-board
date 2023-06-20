@@ -1,8 +1,10 @@
 package app
 
 import (
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/mongo"
 	"t-mail/internal/controller/http"
+	http_validator "t-mail/internal/controller/http/validator"
 	repo "t-mail/internal/infrastructure/repository/mongo"
 	"t-mail/internal/pkg/hasher"
 	"t-mail/internal/pkg/jwt"
@@ -28,7 +30,9 @@ func (a *application) Run() error {
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
 	userUseCase := user.CreateUserUseCase(userCreator, userAuthService)
-	http.RunServer(userUseCase)
+	httpValidator := http_validator.CreateValidator(validator.New())
+
+	http.RunServer(userUseCase, httpValidator)
 
 	return nil
 }
