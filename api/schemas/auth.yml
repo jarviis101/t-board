@@ -1,0 +1,51 @@
+Register:
+  required:
+    - email
+    - password
+    - name
+    - phone
+  type: object
+  properties:
+    email:
+      type: string
+      format: email
+      description: Email(must be unique)
+      example: 'jarviis101@gmail.com'
+    password:
+      type: string
+      format: password
+      description: Password
+      example: 'password'
+    name:
+      type: string
+      description: Name
+      example: 'John Doe'
+    phone:
+      type: string
+      format: phone
+      description: Phone number
+      example: '+380501112233'
+Login:
+  required:
+    - email
+    - password
+  type: object
+  properties:
+    email:
+      type: string
+      format: email
+      description: Email
+      example: 'jarviis101@gmail.com'
+    password:
+        type: string
+        format: password
+        description: Password
+        example: 'password'
+
+Token:
+  type: object
+  properties:
+    token:
+      type: string
+      description: Token
+      example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjkyMmUxNzU0YTY5NWFiMjAxNjk1YSIsImV4cCI6MTY3NzI4OTc4MH0.94i5ITwJ2TyW1mtVaP4KY1JMW409E6dePhiYGVR2gBg

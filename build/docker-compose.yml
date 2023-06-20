@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  database:
+    image: mongo:5.0
+    container_name: database
+    env_file:
+      - ../.env
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  swagger:
+    container_name: swagger
+    image: swaggerapi/swagger-ui
+    volumes:
+      - ../api/:/usr/share/nginx/html/api
+    environment:
+      URLS: "[
+        { url: 'api/v1.yml', name: 'API-v1' },
+      ]"
+    ports:
+      - "81:8080"
+
+volumes:
+  mongodb:

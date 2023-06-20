@@ -1,0 +1,58 @@
+Create:
+  required:
+    - title
+  type: object
+  properties:
+    title:
+      type: string
+      description: Title
+      example: 'Group title'
+    description:
+      type: string
+      description: Description
+      example: 'Group description'
+
+CreatedResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: Group ID
+      example: '63f922e1754a695ab201695a'
+    title:
+      type: string
+      description: Title
+      example: 'Group title'
+    description:
+      type: string
+      description: Description
+      example: 'Group description'
+
+Group:
+  type: object
+  properties:
+    id:
+      type: string
+      description: Group ID
+      example: '63f922e1754a695ab201695a'
+    title:
+      type: string
+      description: Title
+      example: 'Group title'
+    description:
+      type: string
+      description: Description
+      example: 'Group description'
+
+GetAll:
+  type: array
+  items:
+    $ref: '#/Group'
+
+AddUser:
+  type: object
+  properties:
+    user_id:
+      type: string
+      description: User ID
+      example: '63f922e1754a695ab201695a'

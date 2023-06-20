@@ -1,0 +1,21 @@
+UserInfo:
+  type: object
+  properties:
+    email:
+      type: string
+      format: email
+      description: Email
+      example: 'example@example.com'
+    name:
+      type: string
+      description: Name
+      example: 'John Doe'
+    phone:
+      type: string
+      format: phone
+      description: Phone number
+      example: '+380501112233'
+    groups:
+      type: array
+      items:
+        $ref: './group.yml#/Group'

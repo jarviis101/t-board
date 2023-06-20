@@ -1,0 +1,55 @@
+Create:
+  required:
+    - title
+    - group_id
+  type: object
+  properties:
+    group_id:
+      type: string
+      description: Group ID
+      example: '63f922e1754a695ab201695a'
+    title:
+      type: string
+      description: Title
+      example: 'Item title'
+    description:
+      type: string
+      description: Description
+      example: 'Item description'
+
+CreatedResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: Item ID
+      example: '63f922e1754a695ab201695a'
+    title:
+      type: string
+      description: Title
+      example: 'Item title'
+    description:
+      type: string
+      description: Description
+      example: 'Item description'
+
+Item:
+  type: object
+  properties:
+    id:
+      type: string
+      description: Item ID
+      example: '63f922e1754a695ab201695a'
+    title:
+      type: string
+      description: Title
+      example: 'Item title'
+    description:
+      type: string
+      description: Description
+      example: 'Item description'
+
+GetAll:
+  type: array
+  items:
+    $ref: '#/Item'

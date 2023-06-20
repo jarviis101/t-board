@@ -1,0 +1,23 @@
+BadRequest:
+  type: object
+  properties:
+    message:
+      type: string
+      description: Bad request
+      example: Bad request
+
+UnprocessableEntity:
+  type: object
+  properties:
+    message:
+      type: string
+      description: Bad credentials
+      example: Bad credentials
+
+NotFound:
+  type: object
+  properties:
+    message:
+      type: string
+      description: Not found
+      example: Not found

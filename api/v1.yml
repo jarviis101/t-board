@@ -1,0 +1,305 @@
+openapi: 3.0.1
+info:
+  title: Financy Backend API
+  description: Financy Backend API
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      description: Register a new user
+      tags:
+        - Authentication
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: './schemas/auth.yml#/Register'
+      responses:
+        '200':
+          description: User registered
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/BadRequest'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+  /api/auth/login:
+    post:
+      summary: Login a user
+      description: Login a user
+      tags:
+        - Authentication
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: './schemas/auth.yml#/Login'
+      responses:
+        '200':
+          description: User logged in
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/auth.yml#/Token'
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/BadRequest'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+  /api/users/me:
+    get:
+      security:
+        - token: [ ]
+      summary: Get user info
+      description: Get user info
+      tags:
+        - User
+      responses:
+        '200':
+          description: User found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/user.yml#/UserInfo'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+  /api/users/{id}:
+    get:
+      security:
+        - token: [ ]
+      summary: Get user info
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f9f1c9c9c9c9c9c9c9c9c9c'
+      description: Get user info
+      tags:
+        - User
+      responses:
+        '200':
+          description: User found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/user.yml#/UserInfo'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+  /api/groups:
+    get:
+      security:
+        - token: [ ]
+      summary: Get all groups
+      description: Get all groups
+      tags:
+        - Group
+      responses:
+        '200':
+          description: Groups found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/group.yml#/GetAll'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+    post:
+      security:
+        - token: [ ]
+      summary: Create a new group
+      description: Create a new group
+      tags:
+        - Group
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: './schemas/group.yml#/Create'
+      responses:
+        '200':
+          description: Group created
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/group.yml#/CreatedResponse'
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/BadRequest'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+  /api/groups/{id}/user:
+    put:
+      security:
+        - token: [ ]
+      summary: Add a user to group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f9f1c9c9c9c9c9c9c9c9c9c'
+      description: Add a user to group
+      tags:
+        - Group
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: './schemas/group.yml#/AddUser'
+      responses:
+        '200':
+          description: User added to group
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/BadRequest'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+  /api/items:
+    post:
+      security:
+        - token: [ ]
+      summary: Create a new group item
+      description: Create a new group item
+      tags:
+        - Item
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: './schemas/item.yml#/Create'
+      responses:
+        '200':
+          description: Group created
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/item.yml#/CreatedResponse'
+        '400':
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/BadRequest'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+  /api/items/group/{id}:
+    get:
+      security:
+        - token: [ ]
+      summary: Get all items from group
+      description: Get all items from group
+      tags:
+        - Item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f9f1c9c9c9c9c9c9c9c9c9c'
+      responses:
+        '200':
+          description: Items found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/item.yml#/GetAll'
+        '404':
+          description: Not found
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/NotFound'
+        '422':
+          description: Unprocessable entity
+          content:
+            'application/json':
+              schema:
+                $ref: './schemas/errors.yml#/UnprocessableEntity'
+
+components:
+  securitySchemes:
+    token:
+      type: apiKey
+      description: The token you acquire through login
+      name: Bearer
+      in: header
