@@ -16,8 +16,14 @@ type Database struct {
 	Name string `yaml:"name"`
 }
 
+type Server struct {
+	Port   string `yaml:"port"`
+	Secret string `yaml:"secret"`
+}
+
 type AppConfig struct {
 	Database
+	Server
 }
 
 func CreateConfig() (*AppConfig, error) {

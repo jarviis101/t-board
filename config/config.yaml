@@ -1,3 +1,6 @@
 database:
   uri: ${MONGO_URI}
   name: ${DB_NAME}
+server:
+  port: ${APP_PORT}
+  secret: ${APP_SECRET}

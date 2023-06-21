@@ -16,8 +16,8 @@ type jwtManager struct {
 	secretKey string
 }
 
-func CreateManager() Manager {
-	return &jwtManager{}
+func CreateManager(secretKey string) Manager {
+	return &jwtManager{secretKey}
 }
 
 type UserClaims struct {

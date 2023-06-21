@@ -14,7 +14,7 @@ func main() {
 	}
 	db := pkg.CreateDatabaseConnection(context.Background(), config.Database)
 
-	application := app.CreateApplication(db)
+	application := app.CreateApplication(db, config.Server)
 	if err := application.Run(); err != nil {
 		log.Panic(err.Error())
 	}

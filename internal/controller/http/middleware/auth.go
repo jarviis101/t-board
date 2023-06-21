@@ -13,29 +13,31 @@ const (
 
 var claims *jwt.UserClaims
 
-func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	jwtManager := jwt.CreateManager()
-	return func(ctx echo.Context) error {
-		token := ctx.Request().Header.Get(header)
-		if token == "" {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Not authorized")
-		}
-		accessToken := token[len(excludedStringFromToken):]
-		c, err := jwtManager.Verify(accessToken)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
-		}
+func AuthMiddleware(secret string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		jwtManager := jwt.CreateManager(secret)
+		return func(c echo.Context) error {
+			token := c.Request().Header.Get(header)
+			if token == "" {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Not authorized")
+			}
+			accessToken := token[len(excludedStringFromToken):]
+			verifiedClaims, err := jwtManager.Verify(accessToken)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+			}
 
-		claims = c
-		if err := next(ctx); err != nil {
-			return err
-		}
+			claims = verifiedClaims
+			if err := next(c); err != nil {
+				return err
+			}
 
-		return nil
+			return nil
+		}
 	}
 }
 
 func GetClaims() *jwt.UserClaims {
-	// TODO resolve
+	// TODO provide claims must be with another way
 	return claims
 }

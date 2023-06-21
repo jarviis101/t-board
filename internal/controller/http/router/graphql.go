@@ -5,21 +5,28 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"t-mail/internal/controller/http/middleware"
+	"t-mail/pkg"
 )
 
 type graphqlRouterManager struct {
 	group  *echo.Group
 	server *handler.Server
 	pg     http.HandlerFunc
+	sc     pkg.Server
 }
 
-func CreateGraphqlRouterManager(group *echo.Group, server *handler.Server, pg http.HandlerFunc) RouteManager {
-	return &graphqlRouterManager{group, server, pg}
+func CreateGraphqlRouterManager(
+	group *echo.Group,
+	server *handler.Server,
+	pg http.HandlerFunc,
+	s pkg.Server,
+) RouteManager {
+	return &graphqlRouterManager{group, server, pg, s}
 }
 
 func (r *graphqlRouterManager) PopulateRoutes() {
 	r.group.Add("GET", "/graphql", r.playground)
-	r.group.Add("POST", "/query", r.query, middleware.AuthMiddleware)
+	r.group.Add("POST", "/query", r.query, middleware.AuthMiddleware(r.sc.Secret))
 }
 
 func (r *graphqlRouterManager) query(c echo.Context) error {

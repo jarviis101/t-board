@@ -12,7 +12,7 @@ import (
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	currentUserId := ctx.Value(directives.AuthKey).(string)
+	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
 	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
 	if err != nil {
 		return nil, err

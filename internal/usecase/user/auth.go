@@ -36,6 +36,9 @@ func (s *authService) Authenticate(ctx context.Context, email, password string) 
 	}
 
 	token, err := s.jwtManager.Generate(user)
+	if err != nil {
+		return "", errors.New("Bad credentials")
+	}
 
 	return token, nil
 }

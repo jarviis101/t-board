@@ -7,7 +7,9 @@ import (
 	"t-mail/internal/controller/http/middleware"
 )
 
-const AuthKey = "auth"
+type AuthKey string
+
+const Key = "auth"
 
 func Auth(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
 	claims := middleware.GetClaims()
@@ -16,6 +18,6 @@ func Auth(ctx context.Context, obj interface{}, next graphql.Resolver) (interfac
 		return nil, err
 	}
 
-	c := context.WithValue(ctx, AuthKey, claims.UserId)
+	c := context.WithValue(ctx, AuthKey(Key), claims.UserId)
 	return next(c)
 }

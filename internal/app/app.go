@@ -9,6 +9,7 @@ import (
 	"t-mail/internal/pkg/hasher"
 	"t-mail/internal/pkg/jwt"
 	"t-mail/internal/usecase/user"
+	"t-mail/pkg"
 )
 
 type Application interface {
@@ -16,16 +17,17 @@ type Application interface {
 }
 
 type application struct {
-	database *mongo.Database
+	database     *mongo.Database
+	serverConfig pkg.Server
 }
 
-func CreateApplication(database *mongo.Database) Application {
-	return &application{database}
+func CreateApplication(database *mongo.Database, serverConfig pkg.Server) Application {
+	return &application{database, serverConfig}
 }
 
 func (a *application) Run() error {
 	h := hasher.CreateManager()
-	jwtManager := jwt.CreateManager()
+	jwtManager := jwt.CreateManager(a.serverConfig.Secret)
 	userRepository := repo.CreateUserRepository(a.database.Collection("users"))
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
@@ -33,7 +35,7 @@ func (a *application) Run() error {
 	userUseCase := user.CreateUserUseCase(userCreator, userAuthService, userFinder)
 	httpValidator := http_validator.CreateValidator(validator.New())
 
-	http.RunServer(userUseCase, httpValidator)
+	http.RunServer(userUseCase, httpValidator, a.serverConfig)
 
 	return nil
 }
