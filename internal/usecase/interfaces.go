@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"t-mail/internal/entity"
+	"t-board/internal/entity"
 )
 
 type (

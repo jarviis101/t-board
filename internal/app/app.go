@@ -3,13 +3,13 @@ package app
 import (
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/mongo"
-	"t-mail/internal/controller/http"
-	http_validator "t-mail/internal/controller/http/validator"
-	repo "t-mail/internal/infrastructure/repository/mongo"
-	"t-mail/internal/pkg/hasher"
-	"t-mail/internal/pkg/jwt"
-	"t-mail/internal/usecase/user"
-	"t-mail/pkg"
+	"t-board/internal/controller/http"
+	http_validator "t-board/internal/controller/http/validator"
+	repo "t-board/internal/infrastructure/repository/mongo"
+	"t-board/internal/pkg/hasher"
+	"t-board/internal/pkg/jwt"
+	"t-board/internal/usecase/user"
+	"t-board/pkg"
 )
 
 type Application interface {

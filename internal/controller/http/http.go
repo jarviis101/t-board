@@ -6,12 +6,12 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"t-mail/internal/controller/http/graphql/directives"
-	"t-mail/internal/controller/http/graphql/graph"
-	"t-mail/internal/controller/http/router"
-	"t-mail/internal/controller/http/validator"
-	"t-mail/internal/usecase"
-	"t-mail/pkg"
+	"t-board/internal/controller/http/graphql/directives"
+	"t-board/internal/controller/http/graphql/graph"
+	"t-board/internal/controller/http/router"
+	"t-board/internal/controller/http/validator"
+	"t-board/internal/usecase"
+	"t-board/pkg"
 )
 
 func RunServer(useCase usecase.UserUseCase, v *validator.Validator, serverConfig pkg.Server) {

@@ -7,7 +7,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=s3cr3t
-      - MONGO_INITDB_DATABASE=t-mail
+      - MONGO_INITDB_DATABASE=t-board
     ports:
       - "27017:27017"
     volumes:

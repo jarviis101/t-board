@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"log"
-	"t-mail/internal/app"
-	"t-mail/pkg"
+	"t-board/internal/app"
+	"t-board/pkg"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 package graph
 
-import "t-mail/internal/usecase"
+import "t-board/internal/usecase"
 
 //go:generate go run github.com/99designs/gqlgen generate
 

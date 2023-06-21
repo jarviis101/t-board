@@ -2,8 +2,22 @@
 
 package model
 
+type Board struct {
+	ID          string  `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	CreatedAt   string  `json:"createdAt"`
+	Notes       []*Note `json:"notes"`
+}
+
+type Note struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+}
+
 type User struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	ID     string   `json:"id"`
+	Email  string   `json:"email"`
+	Name   string   `json:"name"`
+	Boards []*Board `json:"boards"`
 }

@@ -3,7 +3,7 @@ db.createUser({
     pwd: "password",
     roles: [{
         role: "readWrite",
-        db: "t-mail"
+        db: "t-board"
     }]
 });
 db.createCollection('users');

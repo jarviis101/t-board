@@ -2,8 +2,8 @@ package user
 
 import (
 	"context"
-	"t-mail/internal/entity"
-	"t-mail/internal/usecase"
+	"t-board/internal/entity"
+	"t-board/internal/usecase"
 )
 
 type userUseCase struct {

@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"t-mail/internal/controller/http/types"
-	"t-mail/internal/controller/http/validator"
-	"t-mail/internal/usecase"
+	"t-board/internal/controller/http/types"
+	"t-board/internal/controller/http/validator"
+	"t-board/internal/usecase"
 )
 
 type RouteManager interface {

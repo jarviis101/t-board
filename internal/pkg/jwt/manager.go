@@ -3,7 +3,7 @@ package jwt
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	"t-mail/internal/entity"
+	"t-board/internal/entity"
 	"time"
 )
 

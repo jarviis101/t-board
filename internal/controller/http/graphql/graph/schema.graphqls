@@ -8,6 +8,20 @@ type User {
   id: ID!
   email: String!
   name: String!
+  boards: [Board]!
+}
+
+type Board {
+  id: ID!
+  title: String!
+  description: String!
+  createdAt: String!
+  notes: [Note]!
+}
+
+type Note {
+  id: ID!
+  description: String!
 }
 
 type Query {

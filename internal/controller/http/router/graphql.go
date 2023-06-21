@@ -4,8 +4,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"t-mail/internal/controller/http/middleware"
-	"t-mail/pkg"
+	"t-board/internal/controller/http/middleware"
+	"t-board/pkg"
 )
 
 type graphqlRouterManager struct {

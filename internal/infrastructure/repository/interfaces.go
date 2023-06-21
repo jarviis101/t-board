@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"t-mail/internal/entity"
+	"t-board/internal/entity"
 )
 
 type (

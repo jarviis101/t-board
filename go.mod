@@ -1,4 +1,4 @@
-module t-mail
+module t-board
 
 go 1.20
 

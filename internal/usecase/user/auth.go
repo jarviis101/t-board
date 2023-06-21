@@ -3,9 +3,9 @@ package user
 import (
 	"context"
 	"errors"
-	"t-mail/internal/infrastructure/repository"
-	"t-mail/internal/pkg/hasher"
-	"t-mail/internal/pkg/jwt"
+	"t-board/internal/infrastructure/repository"
+	"t-board/internal/pkg/hasher"
+	"t-board/internal/pkg/jwt"
 )
 
 type AuthService interface {

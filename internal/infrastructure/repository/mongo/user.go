@@ -5,8 +5,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"t-mail/internal/entity"
-	"t-mail/internal/infrastructure/repository"
+	"t-board/internal/entity"
+	"t-board/internal/infrastructure/repository"
 	"time"
 )
 

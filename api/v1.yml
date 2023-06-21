@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: Financy Backend API
-  description: Financy Backend API
+  title: T-Board Backend API
+  description: T-Board Backend API
   version: 1.0.0
 servers:
   - url: /

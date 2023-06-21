@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"t-mail/internal/pkg/jwt"
+	"t-board/internal/pkg/jwt"
 )
 
 const (

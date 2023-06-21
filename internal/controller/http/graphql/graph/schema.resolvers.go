@@ -6,8 +6,8 @@ package graph
 
 import (
 	"context"
-	"t-mail/internal/controller/http/graphql/directives"
-	"t-mail/internal/controller/http/graphql/graph/model"
+	"t-board/internal/controller/http/graphql/directives"
+	"t-board/internal/controller/http/graphql/graph/model"
 )
 
 // Me is the resolver for the me field.

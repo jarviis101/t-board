@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/vektah/gqlparser/v2/gqlerror"
-	"t-mail/internal/controller/http/middleware"
+	"t-board/internal/controller/http/middleware"
 )
 
 type AuthKey string
