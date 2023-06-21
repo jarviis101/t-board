@@ -6,6 +6,10 @@ Register:
     - phone
   type: object
   properties:
+    name:
+      type: string
+      description: Name
+      example: 'John Doe'
     email:
       type: string
       format: email
@@ -16,10 +20,6 @@ Register:
       format: password
       description: Password
       example: 'password'
-    name:
-      type: string
-      description: Name
-      example: 'John Doe'
 Login:
   required:
     - email
