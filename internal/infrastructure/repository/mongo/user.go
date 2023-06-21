@@ -43,10 +43,11 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.
 	}
 
 	return &entity.User{
-		ID:       user.ID.Hex(),
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
+		ID:        user.ID.Hex(),
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
+		CreatedAt: user.CreatedAt,
 	}, nil
 }
 
@@ -57,10 +58,11 @@ func (r *userRepository) GetById(ctx context.Context, id string) (*entity.User, 
 	}
 
 	return &entity.User{
-		ID:       user.ID.Hex(),
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
+		ID:        user.ID.Hex(),
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
+		CreatedAt: user.CreatedAt,
 	}, nil
 }
 

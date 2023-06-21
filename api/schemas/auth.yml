@@ -20,11 +20,6 @@ Register:
       type: string
       description: Name
       example: 'John Doe'
-    phone:
-      type: string
-      format: phone
-      description: Phone number
-      example: '+380501112233'
 Login:
   required:
     - email
