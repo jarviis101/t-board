@@ -5,7 +5,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"t-board/internal/controller/http"
 	http_validator "t-board/internal/controller/http/validator"
-	repo "t-board/internal/infrastructure/repository/mongo"
+	"t-board/internal/infrastructure/repository/mongo/mapper"
+	"t-board/internal/infrastructure/repository/mongo/repository"
 	"t-board/internal/pkg/hasher"
 	"t-board/internal/pkg/jwt"
 	"t-board/internal/usecase"
@@ -41,7 +42,8 @@ func (a *application) resolveUserUseCase() usecase.UserUseCase {
 	h := hasher.CreateManager()
 	jwtManager := jwt.CreateManager(a.serverConfig.Secret)
 
-	userRepository := repo.CreateUserRepository(a.database.Collection("users"))
+	userMapper := mapper.CreateUserMapper()
+	userRepository := repository.CreateUserRepository(a.database.Collection("users"), userMapper)
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
 	userFinder := user.CreateFinder(userRepository)
@@ -50,7 +52,8 @@ func (a *application) resolveUserUseCase() usecase.UserUseCase {
 }
 
 func (a *application) resolveBoardUseCase() usecase.BoardUseCase {
-	boardRepository := repo.CreateBoardRepository(a.database.Collection("boards"))
+	boardMapper := mapper.CreateBoardMapper()
+	boardRepository := repository.CreateBoardRepository(a.database.Collection("boards"), boardMapper)
 	boardCreator := board.CreateCreator(boardRepository)
 	boardFinder := board.CreateFinder(boardRepository)
 

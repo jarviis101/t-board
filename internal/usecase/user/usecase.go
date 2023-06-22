@@ -38,6 +38,6 @@ func (uc *userUseCase) Get(ctx context.Context, id string) (*entity.User, error)
 	return uc.finderService.Find(ctx, id)
 }
 
-func (uc *userUseCase) GetMany(ctx context.Context, ids []string) ([]entity.User, error) {
+func (uc *userUseCase) GetMany(ctx context.Context, ids []string) ([]*entity.User, error) {
 	return uc.finderService.FindMany(ctx, ids)
 }

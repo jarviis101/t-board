@@ -7,7 +7,7 @@ import (
 )
 
 type Finder interface {
-	FindByUser(ctx context.Context, id string) ([]entity.Board, error)
+	FindByUser(ctx context.Context, id string) ([]*entity.Board, error)
 }
 
 type finder struct {
@@ -18,6 +18,6 @@ func CreateFinder(r repository.BoardRepository) Finder {
 	return &finder{r}
 }
 
-func (f finder) FindByUser(ctx context.Context, user string) ([]entity.Board, error) {
+func (f finder) FindByUser(ctx context.Context, user string) ([]*entity.Board, error) {
 	return f.repository.GetByUser(ctx, user)
 }

@@ -29,7 +29,7 @@ func (bc *boardUseCase) Create(
 	return bc.creatorService.CreateBoard(ctx, board)
 }
 
-func (bc *boardUseCase) GetByUser(ctx context.Context, creator string) ([]entity.Board, error) {
+func (bc *boardUseCase) GetByUser(ctx context.Context, creator string) ([]*entity.Board, error) {
 	return bc.finderService.FindByUser(ctx, creator)
 }
 

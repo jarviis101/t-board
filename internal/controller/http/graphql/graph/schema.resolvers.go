@@ -67,7 +67,7 @@ func (r *queryResolver) GetBoards(ctx context.Context) ([]*model.Board, error) {
 			return nil, err
 		}
 		members := r.userTransformer.TransformManyToModel(u)
-		m := r.boardTransformer.TransformToModel(&board)
+		m := r.boardTransformer.TransformToModel(board)
 		m.Members = members
 
 		boards = append(boards, m)

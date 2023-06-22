@@ -1,4 +1,4 @@
-package mongo
+package repository
 
 import (
 	"context"
@@ -7,19 +7,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"t-board/internal/entity"
 	"t-board/internal/infrastructure/repository"
+	schema "t-board/internal/infrastructure/repository/mongo"
+	"t-board/internal/infrastructure/repository/mongo/mapper"
 	"time"
 )
 
 type userRepository struct {
 	collection *mongo.Collection
+	mapper     mapper.UserMapper
 }
 
-func CreateUserRepository(collection *mongo.Collection) repository.UserRepository {
-	return &userRepository{collection: collection}
+func CreateUserRepository(c *mongo.Collection, m mapper.UserMapper) repository.UserRepository {
+	return &userRepository{c, m}
 }
 
 func (r *userRepository) Store(ctx context.Context, u *entity.User) error {
-	user := &User{
+	user := &schema.User{
 		ID:        primitive.NewObjectID(),
 		Name:      u.Name,
 		Email:     u.Email,
@@ -36,19 +39,13 @@ func (r *userRepository) Store(ctx context.Context, u *entity.User) error {
 }
 
 func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
-	var user *User
+	var user *schema.User
 	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
 
-	return &entity.User{
-		ID:        user.ID.Hex(),
-		Name:      user.Name,
-		Email:     user.Email,
-		Password:  user.Password,
-		CreatedAt: user.CreatedAt,
-	}, nil
+	return r.mapper.SchemaToEntity(user), nil
 }
 
 func (r *userRepository) GetById(ctx context.Context, id string) (*entity.User, error) {
@@ -57,18 +54,12 @@ func (r *userRepository) GetById(ctx context.Context, id string) (*entity.User, 
 		return nil, err
 	}
 
-	return &entity.User{
-		ID:        user.ID.Hex(),
-		Name:      user.Name,
-		Email:     user.Email,
-		Password:  user.Password,
-		CreatedAt: user.CreatedAt,
-	}, nil
+	return r.mapper.SchemaToEntity(user), nil
 }
 
-func (r *userRepository) GetByIds(ctx context.Context, ids []string) ([]entity.User, error) {
-	var users []User
-	var usersEntity []entity.User
+func (r *userRepository) GetByIds(ctx context.Context, ids []string) ([]*entity.User, error) {
+	var users []*schema.User
+	var usersEntity []*entity.User
 	objectIds := r.fromStringToObjectId(ids)
 	cur, err := r.collection.Find(ctx, bson.M{"_id": bson.M{
 		"$in": objectIds,
@@ -78,7 +69,7 @@ func (r *userRepository) GetByIds(ctx context.Context, ids []string) ([]entity.U
 	}
 
 	for cur.Next(ctx) {
-		var user User
+		var user *schema.User
 		if err := cur.Decode(&user); err != nil {
 			return nil, err
 		}
@@ -87,26 +78,20 @@ func (r *userRepository) GetByIds(ctx context.Context, ids []string) ([]entity.U
 	}
 
 	for _, u := range users {
-		board := entity.User{
-			ID:        u.ID.Hex(),
-			Name:      u.Name,
-			Email:     u.Email,
-			CreatedAt: u.CreatedAt,
-			UpdatedAt: u.UpdatedAt,
-		}
-		usersEntity = append(usersEntity, board)
+		user := r.mapper.SchemaToEntity(u)
+		usersEntity = append(usersEntity, user)
 	}
 
 	return usersEntity, nil
 }
 
-func (r *userRepository) getById(ctx context.Context, id string) (*User, error) {
+func (r *userRepository) getById(ctx context.Context, id string) (*schema.User, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
-	var user *User
+	var user *schema.User
 	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
 	if err != nil {
 		return nil, err

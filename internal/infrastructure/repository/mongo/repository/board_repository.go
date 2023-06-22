@@ -1,4 +1,4 @@
-package mongo
+package repository
 
 import (
 	"context"
@@ -7,19 +7,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"t-board/internal/entity"
 	"t-board/internal/infrastructure/repository"
+	schema "t-board/internal/infrastructure/repository/mongo"
+	"t-board/internal/infrastructure/repository/mongo/mapper"
 	"time"
 )
 
 type boardRepository struct {
 	collection *mongo.Collection
+	mapper     mapper.BoardMapper
 }
 
-func CreateBoardRepository(c *mongo.Collection) repository.BoardRepository {
-	return &boardRepository{c}
+func CreateBoardRepository(c *mongo.Collection, m mapper.BoardMapper) repository.BoardRepository {
+	return &boardRepository{c, m}
 }
 
 func (r *boardRepository) Store(ctx context.Context, b *entity.Board) (*entity.Board, error) {
-	board := &Board{
+	board := &schema.Board{
 		ID:          primitive.NewObjectID(),
 		Title:       b.Title,
 		Description: b.Description,
@@ -33,17 +36,17 @@ func (r *boardRepository) Store(ctx context.Context, b *entity.Board) (*entity.B
 		return nil, err
 	}
 
-	return b, nil
+	return r.mapper.SchemaToEntity(board), nil
 }
 
-func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]entity.Board, error) {
+func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]*entity.Board, error) {
 	userObjectId, err := primitive.ObjectIDFromHex(user)
 	if err != nil {
 		return nil, err
 	}
 
-	var boards []Board
-	var boardsEntity []entity.Board
+	var boards []*schema.Board
+	var boardsEntity []*entity.Board
 	cur, err := r.collection.Find(ctx, bson.M{"members": bson.M{
 		"$in": []primitive.ObjectID{userObjectId},
 	}})
@@ -52,7 +55,7 @@ func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]entity.
 	}
 
 	for cur.Next(ctx) {
-		var board Board
+		var board *schema.Board
 		if err := cur.Decode(&board); err != nil {
 			return nil, err
 		}
@@ -61,15 +64,7 @@ func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]entity.
 	}
 
 	for _, b := range boards {
-		board := entity.Board{
-			ID:          b.ID.Hex(),
-			Title:       b.Title,
-			Description: b.Description,
-			Type:        entity.BoardType(b.Type),
-			CreatedAt:   b.CreatedAt,
-			UpdatedAt:   b.UpdatedAt,
-			Members:     r.fromObjectIdToString(b.Members),
-		}
+		board := r.mapper.SchemaToEntity(b)
 		boardsEntity = append(boardsEntity, board)
 	}
 
@@ -97,13 +92,4 @@ func (r *boardRepository) fromStringToObjectId(ids []string) []primitive.ObjectI
 	}
 
 	return objectIds
-}
-
-func (r *boardRepository) fromObjectIdToString(objectIds []primitive.ObjectID) []string {
-	var ids []string
-	for _, objectId := range objectIds {
-		ids = append(ids, objectId.Hex())
-	}
-
-	return ids
 }
