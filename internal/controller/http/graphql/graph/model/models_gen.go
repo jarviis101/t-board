@@ -2,12 +2,27 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Board struct {
-	ID          string  `json:"id"`
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	CreatedAt   string  `json:"createdAt"`
-	Notes       []*Note `json:"notes"`
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	CreatedAt   string    `json:"createdAt"`
+	UpdatedAt   string    `json:"updatedAt"`
+	Type        BoardType `json:"type"`
+	Notes       []*Note   `json:"notes"`
+	Members     []*User   `json:"members"`
+}
+
+type CreateBoard struct {
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Type        BoardType `json:"type"`
 }
 
 type Note struct {
@@ -16,8 +31,48 @@ type Note struct {
 }
 
 type User struct {
-	ID     string   `json:"id"`
-	Email  string   `json:"email"`
-	Name   string   `json:"name"`
-	Boards []*Board `json:"boards"`
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
+type BoardType string
+
+const (
+	BoardTypePersonal BoardType = "personal"
+	BoardTypeGroup    BoardType = "group"
+)
+
+var AllBoardType = []BoardType{
+	BoardTypePersonal,
+	BoardTypeGroup,
+}
+
+func (e BoardType) IsValid() bool {
+	switch e {
+	case BoardTypePersonal, BoardTypeGroup:
+		return true
+	}
+	return false
+}
+
+func (e BoardType) String() string {
+	return string(e)
+}
+
+func (e *BoardType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BoardType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BoardType", str)
+	}
+	return nil
+}
+
+func (e BoardType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

@@ -17,8 +17,8 @@ func CreateManager() Manager {
 	return &hasher{}
 }
 
-func (h *hasher) HashPassword(password string) string {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func (h *hasher) HashPassword(p string) string {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.DefaultCost)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +26,7 @@ func (h *hasher) HashPassword(password string) string {
 	return string(hashedPassword)
 }
 
-func (h *hasher) ComparePassword(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+func (h *hasher) ComparePassword(p, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(p))
 	return err == nil
 }

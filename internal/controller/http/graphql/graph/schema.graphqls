@@ -4,11 +4,15 @@
 
 directive @auth on FIELD_DEFINITION
 
+enum BoardType {
+  personal,
+  group
+}
+
 type User {
   id: ID!
   email: String!
   name: String!
-  boards: [Board]!
 }
 
 type Board {
@@ -16,7 +20,10 @@ type Board {
   title: String!
   description: String!
   createdAt: String!
+  updatedAt: String!
+  type: BoardType!
   notes: [Note]!
+  members: [User]!
 }
 
 type Note {
@@ -26,4 +33,17 @@ type Note {
 
 type Query {
   me: User! @auth
+  getBoards: [Board]! @auth
+  getNotesByBoard(board: String!): [Note]! @auth
 }
+
+input CreateBoard {
+  title: String!
+  description: String!
+  type: BoardType!
+}
+
+type Mutation {
+  createBoard(input: CreateBoard!): Board! @auth
+}
+

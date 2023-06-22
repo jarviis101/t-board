@@ -8,6 +8,8 @@ import (
 	repo "t-board/internal/infrastructure/repository/mongo"
 	"t-board/internal/pkg/hasher"
 	"t-board/internal/pkg/jwt"
+	"t-board/internal/usecase"
+	"t-board/internal/usecase/board"
 	"t-board/internal/usecase/user"
 	"t-board/pkg"
 )
@@ -21,21 +23,36 @@ type application struct {
 	serverConfig pkg.Server
 }
 
-func CreateApplication(database *mongo.Database, serverConfig pkg.Server) Application {
-	return &application{database, serverConfig}
+func CreateApplication(d *mongo.Database, sc pkg.Server) Application {
+	return &application{d, sc}
 }
 
 func (a *application) Run() error {
+	httpValidator := http_validator.CreateValidator(validator.New())
+	boardUseCase := a.resolveBoardUseCase()
+	userUseCase := a.resolveUserUseCase()
+
+	http.RunServer(httpValidator, a.serverConfig, userUseCase, boardUseCase)
+
+	return nil
+}
+
+func (a *application) resolveUserUseCase() usecase.UserUseCase {
 	h := hasher.CreateManager()
 	jwtManager := jwt.CreateManager(a.serverConfig.Secret)
+
 	userRepository := repo.CreateUserRepository(a.database.Collection("users"))
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
 	userFinder := user.CreateFinder(userRepository)
-	userUseCase := user.CreateUserUseCase(userCreator, userAuthService, userFinder)
-	httpValidator := http_validator.CreateValidator(validator.New())
 
-	http.RunServer(userUseCase, httpValidator, a.serverConfig)
+	return user.CreateUserUseCase(userCreator, userAuthService, userFinder)
+}
 
-	return nil
+func (a *application) resolveBoardUseCase() usecase.BoardUseCase {
+	boardRepository := repo.CreateBoardRepository(a.database.Collection("boards"))
+	boardCreator := board.CreateCreator(boardRepository)
+	boardFinder := board.CreateFinder(boardRepository)
+
+	return board.CreateBoardUseCase(boardCreator, boardFinder)
 }

@@ -30,4 +30,5 @@ type Board struct {
 	UpdatedAt   time.Time            `bson:"updated_at,omitempty"`
 	Title       string               `bson:"title,omitempty"`
 	Description string               `bson:"description,omitempty"`
+	Type        string               `bson:"type"`
 }

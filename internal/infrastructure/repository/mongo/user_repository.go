@@ -66,11 +66,46 @@ func (r *userRepository) GetById(ctx context.Context, id string) (*entity.User, 
 	}, nil
 }
 
+func (r *userRepository) GetByIds(ctx context.Context, ids []string) ([]entity.User, error) {
+	var users []User
+	var usersEntity []entity.User
+	objectIds := r.fromStringToObjectId(ids)
+	cur, err := r.collection.Find(ctx, bson.M{"_id": bson.M{
+		"$in": objectIds,
+	}})
+	if err != nil {
+		return nil, err
+	}
+
+	for cur.Next(ctx) {
+		var user User
+		if err := cur.Decode(&user); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	for _, u := range users {
+		board := entity.User{
+			ID:        u.ID.Hex(),
+			Name:      u.Name,
+			Email:     u.Email,
+			CreatedAt: u.CreatedAt,
+			UpdatedAt: u.UpdatedAt,
+		}
+		usersEntity = append(usersEntity, board)
+	}
+
+	return usersEntity, nil
+}
+
 func (r *userRepository) getById(ctx context.Context, id string) (*User, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
+
 	var user *User
 	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
 	if err != nil {
@@ -78,4 +113,18 @@ func (r *userRepository) getById(ctx context.Context, id string) (*User, error) 
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) fromStringToObjectId(ids []string) []primitive.ObjectID {
+	var objectIds []primitive.ObjectID
+
+	for _, objectId := range ids {
+		objectId, err := primitive.ObjectIDFromHex(objectId)
+		if err != nil {
+			continue
+		}
+		objectIds = append(objectIds, objectId)
+	}
+
+	return objectIds
 }

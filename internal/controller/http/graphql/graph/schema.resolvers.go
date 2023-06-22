@@ -6,9 +6,35 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"t-board/internal/controller/http/graphql/directives"
 	"t-board/internal/controller/http/graphql/graph/model"
 )
+
+// CreateBoard is the resolver for the createBoard field.
+func (r *mutationResolver) CreateBoard(ctx context.Context, input model.CreateBoard) (*model.Board, error) {
+	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
+	if err != nil {
+		return nil, err
+	}
+
+	board, err := r.boardUseCase.Create(ctx, input.Title, input.Description, currentUser.ID, string(input.Type))
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := r.userUseCase.GetMany(ctx, board.Members)
+	if err != nil {
+		return nil, err
+	}
+
+	members := r.userTransformer.TransformManyToModel(u)
+	m := r.boardTransformer.TransformToModel(board)
+	m.Members = members
+
+	return m, nil
+}
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
@@ -18,18 +44,48 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 		return nil, err
 	}
 
-	return &model.User{ID: currentUser.ID, Email: currentUser.Email, Name: currentUser.Name}, nil
+	return r.userTransformer.TransformToModel(currentUser), nil
 }
+
+// GetBoards is the resolver for the getBoards field.
+func (r *queryResolver) GetBoards(ctx context.Context) ([]*model.Board, error) {
+	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
+	if err != nil {
+		return nil, err
+	}
+
+	var boards []*model.Board
+	boardsEntity, err := r.boardUseCase.GetByUser(ctx, currentUser.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, board := range boardsEntity {
+		u, err := r.userUseCase.GetMany(ctx, board.Members)
+		if err != nil {
+			return nil, err
+		}
+		members := r.userTransformer.TransformManyToModel(u)
+		m := r.boardTransformer.TransformToModel(&board)
+		m.Members = members
+
+		boards = append(boards, m)
+	}
+
+	return boards, nil
+}
+
+// GetNotesByBoard is the resolver for the getNotesByBoard field.
+func (r *queryResolver) GetNotesByBoard(ctx context.Context, board string) ([]*model.Note, error) {
+	panic(fmt.Errorf("not implemented: GetNotesByBoard - getNotesByBoard"))
+}
+
+// Mutation returns MutationResolver implementation.
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }

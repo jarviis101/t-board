@@ -8,6 +8,7 @@ import (
 
 type Finder interface {
 	Find(ctx context.Context, id string) (*entity.User, error)
+	FindMany(ctx context.Context, ids []string) ([]entity.User, error)
 }
 
 type finder struct {
@@ -20,4 +21,8 @@ func CreateFinder(repository repository.UserRepository) Finder {
 
 func (f *finder) Find(ctx context.Context, id string) (*entity.User, error) {
 	return f.repository.GetById(ctx, id)
+}
+
+func (f *finder) FindMany(ctx context.Context, ids []string) ([]entity.User, error) {
+	return f.repository.GetByIds(ctx, ids)
 }

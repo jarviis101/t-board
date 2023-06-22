@@ -15,13 +15,8 @@ type graphqlRouterManager struct {
 	sc     pkg.Server
 }
 
-func CreateGraphqlRouterManager(
-	group *echo.Group,
-	server *handler.Server,
-	pg http.HandlerFunc,
-	s pkg.Server,
-) RouteManager {
-	return &graphqlRouterManager{group, server, pg, s}
+func CreateGraphqlRouterManager(g *echo.Group, s *handler.Server, pg http.HandlerFunc, sc pkg.Server) RouteManager {
+	return &graphqlRouterManager{g, s, pg, sc}
 }
 
 func (r *graphqlRouterManager) PopulateRoutes() {

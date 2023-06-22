@@ -13,11 +13,11 @@ type Manager interface {
 }
 
 type jwtManager struct {
-	secretKey string
+	secret string
 }
 
-func CreateManager(secretKey string) Manager {
-	return &jwtManager{secretKey}
+func CreateManager(secret string) Manager {
+	return &jwtManager{secret}
 }
 
 type UserClaims struct {
@@ -33,9 +33,9 @@ func (j *jwtManager) Generate(user *entity.User) (string, error) {
 		},
 		UserId: user.ID,
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(j.secretKey))
+
+	return token.SignedString([]byte(j.secret))
 }
 
 func (j *jwtManager) Verify(accessToken string) (*UserClaims, error) {
@@ -46,7 +46,7 @@ func (j *jwtManager) Verify(accessToken string) (*UserClaims, error) {
 			return nil, fmt.Errorf("unexpected token signing method")
 		}
 
-		return []byte(j.secretKey), nil
+		return []byte(j.secret), nil
 	})
 
 	if err != nil {

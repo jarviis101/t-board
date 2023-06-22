@@ -19,12 +19,8 @@ type userRouteManager struct {
 	useCase   usecase.UserUseCase
 }
 
-func CreateUserRouteManager(
-	g *echo.Group,
-	v *validator.Validator,
-	useCase usecase.UserUseCase,
-) RouteManager {
-	return &userRouteManager{g, v, useCase}
+func CreateUserRouteManager(g *echo.Group, v *validator.Validator, u usecase.UserUseCase) RouteManager {
+	return &userRouteManager{g, v, u}
 }
 
 func (r *userRouteManager) PopulateRoutes() {
@@ -37,9 +33,11 @@ func (r *userRouteManager) register(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
 	if err := r.validator.Validate(u); err != nil {
 		return err
 	}
+
 	if err := r.useCase.Register(context.Background(), u.Name, u.Email, u.Password); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -52,6 +50,7 @@ func (r *userRouteManager) login(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
 	if err := r.validator.Validate(u); err != nil {
 		return err
 	}
@@ -60,7 +59,7 @@ func (r *userRouteManager) login(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-
 	response := &types.LoginUserResponse{Token: token}
+
 	return c.JSON(http.StatusOK, response)
 }
