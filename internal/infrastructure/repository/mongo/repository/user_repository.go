@@ -85,6 +85,24 @@ func (r *userRepository) GetByIds(ctx context.Context, ids []string) ([]*entity.
 	return usersEntity, nil
 }
 
+func (r *userRepository) AddBoard(ctx context.Context, u *entity.User, b *entity.Board) error {
+	boardObjectId, err := primitive.ObjectIDFromHex(b.ID)
+
+	boards := append(r.fromStringToObjectId(u.Boards), boardObjectId)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": u.ID}
+	update := bson.M{"$set": bson.M{"boards": boards}}
+	_, err = r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *userRepository) getById(ctx context.Context, id string) (*schema.User, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

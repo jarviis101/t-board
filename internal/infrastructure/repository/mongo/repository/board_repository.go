@@ -81,6 +81,30 @@ func (r *boardRepository) Delete(ctx context.Context, board string) {
 	panic("implement me")
 }
 
+func (r *boardRepository) GetById(ctx context.Context, id string) (*entity.Board, error) {
+	board, err := r.getById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.mapper.SchemaToEntity(board), nil
+}
+
+func (r *boardRepository) getById(ctx context.Context, id string) (*schema.Board, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var board *schema.Board
+	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&board)
+	if err != nil {
+		return nil, err
+	}
+
+	return board, nil
+}
+
 func (r *boardRepository) fromStringToObjectId(ids []string) []primitive.ObjectID {
 	var objectIds []primitive.ObjectID
 	for _, objectId := range ids {

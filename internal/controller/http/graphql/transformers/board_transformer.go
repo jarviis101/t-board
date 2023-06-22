@@ -7,7 +7,7 @@ import (
 
 type BoardTransformer interface {
 	TransformToModel(b *entity.Board) *model.Board
-	TransformManyToModel(b []entity.Board) []*model.Board
+	TransformManyToModel(b []*entity.Board) []*model.Board
 }
 
 type boardTransformer struct {
@@ -17,11 +17,11 @@ func CreateBoardTransformer() BoardTransformer {
 	return &boardTransformer{}
 }
 
-func (t *boardTransformer) TransformManyToModel(b []entity.Board) []*model.Board {
+func (t *boardTransformer) TransformManyToModel(b []*entity.Board) []*model.Board {
 	var boards []*model.Board
 
 	for _, board := range b {
-		m := t.TransformToModel(&board)
+		m := t.TransformToModel(board)
 
 		boards = append(boards, m)
 	}

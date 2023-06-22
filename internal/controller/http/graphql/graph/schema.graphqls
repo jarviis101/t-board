@@ -13,6 +13,7 @@ type User {
   id: ID!
   email: String!
   name: String!
+  boards: [Board]!
 }
 
 type Board {

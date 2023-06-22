@@ -24,6 +24,10 @@ func (r *mutationResolver) CreateBoard(ctx context.Context, input model.CreateBo
 		return nil, err
 	}
 
+	if err = r.userUseCase.AddBoard(ctx, currentUser, board); err != nil {
+		return nil, err
+	}
+
 	u, err := r.userUseCase.GetMany(ctx, board.Members)
 	if err != nil {
 		return nil, err
@@ -44,7 +48,16 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 		return nil, err
 	}
 
-	return r.userTransformer.TransformToModel(currentUser), nil
+	b, err := r.boardUseCase.GetByUser(ctx, currentUser.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	boards := r.boardTransformer.TransformManyToModel(b)
+	m := r.userTransformer.TransformToModel(currentUser)
+	m.Boards = boards
+
+	return m, nil
 }
 
 // GetBoards is the resolver for the getBoards field.
@@ -66,6 +79,7 @@ func (r *queryResolver) GetBoards(ctx context.Context) ([]*model.Board, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		members := r.userTransformer.TransformManyToModel(u)
 		m := r.boardTransformer.TransformToModel(board)
 		m.Members = members

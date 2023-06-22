@@ -7,13 +7,14 @@ import (
 )
 
 type userUseCase struct {
-	creatorService Creator
-	authService    AuthService
-	finderService  Finder
+	creatorService   Creator
+	authService      AuthService
+	finderService    Finder
+	collectorService Collector
 }
 
-func CreateUserUseCase(c Creator, a AuthService, f Finder) usecase.UserUseCase {
-	return &userUseCase{c, a, f}
+func CreateUserUseCase(c Creator, a AuthService, f Finder, cs Collector) usecase.UserUseCase {
+	return &userUseCase{c, a, f, cs}
 }
 
 func (uc *userUseCase) Register(ctx context.Context, name, email, password string) error {
@@ -32,6 +33,14 @@ func (uc *userUseCase) Login(ctx context.Context, email, password string) (strin
 	}
 
 	return token, nil
+}
+
+func (uc *userUseCase) AddBoard(ctx context.Context, user *entity.User, board *entity.Board) error {
+	if err := uc.collectorService.AddBoardForUser(ctx, user, board); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (uc *userUseCase) Get(ctx context.Context, id string) (*entity.User, error) {

@@ -29,14 +29,18 @@ func (bc *boardUseCase) Create(
 	return bc.creatorService.CreateBoard(ctx, board)
 }
 
-func (bc *boardUseCase) GetByUser(ctx context.Context, creator string) ([]*entity.Board, error) {
-	return bc.finderService.FindByUser(ctx, creator)
-}
-
 func (bc *boardUseCase) Clear(ctx context.Context, board string) error {
 	return nil
 }
 
 func (bc *boardUseCase) Delete(ctx context.Context, board string) error {
 	return nil
+}
+
+func (bc *boardUseCase) Get(ctx context.Context, id string) (*entity.Board, error) {
+	return bc.finderService.Find(ctx, id)
+}
+
+func (bc *boardUseCase) GetByUser(ctx context.Context, creator string) ([]*entity.Board, error) {
+	return bc.finderService.FindByUser(ctx, creator)
 }

@@ -9,15 +9,17 @@ type (
 	UserUseCase interface {
 		Register(ctx context.Context, name, email, password string) error
 		Login(ctx context.Context, email, password string) (string, error)
+		AddBoard(ctx context.Context, user *entity.User, board *entity.Board) error
 		Get(ctx context.Context, id string) (*entity.User, error)
 		GetMany(ctx context.Context, ids []string) ([]*entity.User, error)
 	}
 
 	BoardUseCase interface {
 		Create(ctx context.Context, title, description, creator, boardType string) (*entity.Board, error)
-		GetByUser(ctx context.Context, creator string) ([]*entity.Board, error)
 		Clear(ctx context.Context, board string) error
 		Delete(ctx context.Context, board string) error
+		Get(ctx context.Context, id string) (*entity.Board, error)
+		GetByUser(ctx context.Context, creator string) ([]*entity.Board, error)
 	}
 
 	NoteUseCase interface {

@@ -47,8 +47,9 @@ func (a *application) resolveUserUseCase() usecase.UserUseCase {
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
 	userFinder := user.CreateFinder(userRepository)
+	userCollector := user.CreateCollector(userRepository)
 
-	return user.CreateUserUseCase(userCreator, userAuthService, userFinder)
+	return user.CreateUserUseCase(userCreator, userAuthService, userFinder, userCollector)
 }
 
 func (a *application) resolveBoardUseCase() usecase.BoardUseCase {

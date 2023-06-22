@@ -31,9 +31,10 @@ type Note struct {
 }
 
 type User struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	ID     string   `json:"id"`
+	Email  string   `json:"email"`
+	Name   string   `json:"name"`
+	Boards []*Board `json:"boards"`
 }
 
 type BoardType string
