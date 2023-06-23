@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"t-board/internal/entity"
 	"t-board/internal/infrastructure/repository/mongo"
 )
@@ -11,10 +10,11 @@ type UserMapper interface {
 }
 
 type userMapper struct {
+	BaseMapper
 }
 
-func CreateUserMapper() UserMapper {
-	return &userMapper{}
+func CreateUserMapper(bm BaseMapper) UserMapper {
+	return &userMapper{bm}
 }
 
 func (u *userMapper) SchemaToEntity(user *mongo.User) *entity.User {
@@ -27,14 +27,4 @@ func (u *userMapper) SchemaToEntity(user *mongo.User) *entity.User {
 		Password:  user.Password,
 		Boards:    u.fromObjectIdToString(user.Boards),
 	}
-}
-
-func (u *userMapper) fromObjectIdToString(objectIds []primitive.ObjectID) []string {
-	var ids []string
-
-	for _, objectId := range objectIds {
-		ids = append(ids, objectId.Hex())
-	}
-
-	return ids
 }

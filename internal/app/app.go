@@ -30,20 +30,23 @@ func CreateApplication(d *mongo.Database, sc pkg.Server) Application {
 
 func (a *application) Run() error {
 	httpValidator := http_validator.CreateValidator(validator.New())
-	boardUseCase := a.resolveBoardUseCase()
-	userUseCase := a.resolveUserUseCase()
+
+	baseRepository := repository.CreateBaseRepository()
+	baseMapper := mapper.CreateBaseMapper()
+	boardUseCase := a.resolveBoardUseCase(baseRepository, baseMapper)
+	userUseCase := a.resolveUserUseCase(baseRepository, baseMapper)
 
 	http.RunServer(httpValidator, a.serverConfig, userUseCase, boardUseCase)
 
 	return nil
 }
 
-func (a *application) resolveUserUseCase() usecase.UserUseCase {
+func (a *application) resolveUserUseCase(br repository.BaseRepository, bm mapper.BaseMapper) usecase.UserUseCase {
 	h := hasher.CreateManager()
 	jwtManager := jwt.CreateManager(a.serverConfig.Secret)
 
-	userMapper := mapper.CreateUserMapper()
-	userRepository := repository.CreateUserRepository(a.database.Collection("users"), userMapper)
+	userMapper := mapper.CreateUserMapper(bm)
+	userRepository := repository.CreateUserRepository(br, a.database.Collection("users"), userMapper)
 	userCreator := user.CreateCreator(userRepository, h)
 	userAuthService := user.CreateAuthService(userRepository, h, jwtManager)
 	userFinder := user.CreateFinder(userRepository)
@@ -52,9 +55,9 @@ func (a *application) resolveUserUseCase() usecase.UserUseCase {
 	return user.CreateUserUseCase(userCreator, userAuthService, userFinder, userCollector)
 }
 
-func (a *application) resolveBoardUseCase() usecase.BoardUseCase {
-	boardMapper := mapper.CreateBoardMapper()
-	boardRepository := repository.CreateBoardRepository(a.database.Collection("boards"), boardMapper)
+func (a *application) resolveBoardUseCase(br repository.BaseRepository, bm mapper.BaseMapper) usecase.BoardUseCase {
+	boardMapper := mapper.CreateBoardMapper(bm)
+	boardRepository := repository.CreateBoardRepository(br, a.database.Collection("boards"), boardMapper)
 	boardCreator := board.CreateCreator(boardRepository)
 	boardFinder := board.CreateFinder(boardRepository)
 

@@ -35,8 +35,9 @@ func collectRESTRoutes(e *echo.Echo, v *validator.Validator, u usecase.UserUseCa
 }
 
 func collectGraphQLRoutes(e *echo.Echo, sc pkg.Server, u usecase.UserUseCase, b usecase.BoardUseCase) {
-	userTransformer := transformers.CreateUserTransformer()
-	boardTransformer := transformers.CreateBoardTransformer()
+	baseTransformer := transformers.CreateBaseTransformer()
+	userTransformer := transformers.CreateUserTransformer(baseTransformer)
+	boardTransformer := transformers.CreateBoardTransformer(baseTransformer)
 
 	resolver := graph.CreateResolver(u, b, userTransformer, boardTransformer)
 	c := graph.Config{Resolvers: resolver}

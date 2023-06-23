@@ -11,10 +11,11 @@ type BoardTransformer interface {
 }
 
 type boardTransformer struct {
+	BaseTransformer
 }
 
-func CreateBoardTransformer() BoardTransformer {
-	return &boardTransformer{}
+func CreateBoardTransformer(bt BaseTransformer) BoardTransformer {
+	return &boardTransformer{bt}
 }
 
 func (t *boardTransformer) TransformManyToModel(b []*entity.Board) []*model.Board {
@@ -37,5 +38,6 @@ func (t *boardTransformer) TransformToModel(b *entity.Board) *model.Board {
 		CreatedAt:   b.CreatedAt.String(),
 		UpdatedAt:   b.UpdatedAt.String(),
 		Type:        model.BoardType(b.Type),
+		Members:     t.modifyIds(b.Members),
 	}
 }

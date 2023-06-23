@@ -15,8 +15,8 @@ type Board struct {
 	CreatedAt   string    `json:"createdAt"`
 	UpdatedAt   string    `json:"updatedAt"`
 	Type        BoardType `json:"type"`
-	Notes       []*Note   `json:"notes"`
-	Members     []*User   `json:"members"`
+	Notes       []*string `json:"notes"`
+	Members     []*string `json:"members"`
 }
 
 type CreateBoard struct {
@@ -31,10 +31,10 @@ type Note struct {
 }
 
 type User struct {
-	ID     string   `json:"id"`
-	Email  string   `json:"email"`
-	Name   string   `json:"name"`
-	Boards []*Board `json:"boards"`
+	ID     string    `json:"id"`
+	Email  string    `json:"email"`
+	Name   string    `json:"name"`
+	Boards []*string `json:"boards"`
 }
 
 type BoardType string

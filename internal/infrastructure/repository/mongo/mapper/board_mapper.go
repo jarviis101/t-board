@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"t-board/internal/entity"
 	"t-board/internal/infrastructure/repository/mongo"
 )
@@ -11,10 +10,11 @@ type BoardMapper interface {
 }
 
 type boardMapper struct {
+	BaseMapper
 }
 
-func CreateBoardMapper() BoardMapper {
-	return &boardMapper{}
+func CreateBoardMapper(bm BaseMapper) BoardMapper {
+	return &boardMapper{bm}
 }
 
 func (b *boardMapper) SchemaToEntity(board *mongo.Board) *entity.Board {
@@ -27,13 +27,4 @@ func (b *boardMapper) SchemaToEntity(board *mongo.Board) *entity.Board {
 		UpdatedAt:   board.UpdatedAt,
 		Members:     b.fromObjectIdToString(board.Members),
 	}
-}
-
-func (b *boardMapper) fromObjectIdToString(objectIds []primitive.ObjectID) []string {
-	var ids []string
-	for _, objectId := range objectIds {
-		ids = append(ids, objectId.Hex())
-	}
-
-	return ids
 }

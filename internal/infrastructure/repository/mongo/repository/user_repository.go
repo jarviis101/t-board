@@ -13,12 +13,13 @@ import (
 )
 
 type userRepository struct {
+	BaseRepository
 	collection *mongo.Collection
 	mapper     mapper.UserMapper
 }
 
-func CreateUserRepository(c *mongo.Collection, m mapper.UserMapper) repository.UserRepository {
-	return &userRepository{c, m}
+func CreateUserRepository(br BaseRepository, c *mongo.Collection, m mapper.UserMapper) repository.UserRepository {
+	return &userRepository{br, c, m}
 }
 
 func (r *userRepository) Store(ctx context.Context, u *entity.User) error {
@@ -119,18 +120,4 @@ func (r *userRepository) getById(ctx context.Context, id string) (*schema.User, 
 	}
 
 	return user, nil
-}
-
-func (r *userRepository) fromStringToObjectId(ids []string) []primitive.ObjectID {
-	var objectIds []primitive.ObjectID
-
-	for _, objectId := range ids {
-		objectId, err := primitive.ObjectIDFromHex(objectId)
-		if err != nil {
-			continue
-		}
-		objectIds = append(objectIds, objectId)
-	}
-
-	return objectIds
 }

@@ -13,7 +13,7 @@ type User {
   id: ID!
   email: String!
   name: String!
-  boards: [Board]!
+  boards: [String]!
 }
 
 type Board {
@@ -23,8 +23,8 @@ type Board {
   createdAt: String!
   updatedAt: String!
   type: BoardType!
-  notes: [Note]!
-  members: [User]!
+  notes: [String]!
+  members: [String]!
 }
 
 type Note {

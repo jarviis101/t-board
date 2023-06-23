@@ -13,12 +13,13 @@ import (
 )
 
 type boardRepository struct {
+	BaseRepository
 	collection *mongo.Collection
 	mapper     mapper.BoardMapper
 }
 
-func CreateBoardRepository(c *mongo.Collection, m mapper.BoardMapper) repository.BoardRepository {
-	return &boardRepository{c, m}
+func CreateBoardRepository(br BaseRepository, c *mongo.Collection, m mapper.BoardMapper) repository.BoardRepository {
+	return &boardRepository{br, c, m}
 }
 
 func (r *boardRepository) Store(ctx context.Context, b *entity.Board) (*entity.Board, error) {
@@ -103,17 +104,4 @@ func (r *boardRepository) getById(ctx context.Context, id string) (*schema.Board
 	}
 
 	return board, nil
-}
-
-func (r *boardRepository) fromStringToObjectId(ids []string) []primitive.ObjectID {
-	var objectIds []primitive.ObjectID
-	for _, objectId := range ids {
-		objectId, err := primitive.ObjectIDFromHex(objectId)
-		if err != nil {
-			continue
-		}
-		objectIds = append(objectIds, objectId)
-	}
-
-	return objectIds
 }
