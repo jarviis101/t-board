@@ -23,8 +23,13 @@ func CreateBoardRepository(br BaseRepository, c *mongo.Collection, m mapper.Boar
 }
 
 func (r *boardRepository) Store(ctx context.Context, b *entity.Board) (*entity.Board, error) {
+	userObjectId, err := primitive.ObjectIDFromHex(b.OwnerID)
+	if err != nil {
+		return nil, err
+	}
 	board := &schema.Board{
 		ID:          primitive.NewObjectID(),
+		OwnerID:     userObjectId,
 		Title:       b.Title,
 		Description: b.Description,
 		Type:        string(b.Type),
@@ -79,6 +84,38 @@ func (r *boardRepository) Delete(ctx context.Context, board string) error {
 	return nil
 }
 
+func (r *boardRepository) GetById(ctx context.Context, id string) (*entity.Board, error) {
+	board, err := r.getById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.mapper.SchemaToEntity(board), nil
+}
+
+func (r *boardRepository) GetOneByOwner(ctx context.Context, board, user string) (*entity.Board, error) {
+	boardObjectId, err := primitive.ObjectIDFromHex(board)
+	if err != nil {
+		return nil, err
+	}
+	userObjectId, err := primitive.ObjectIDFromHex(user)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{
+		"_id":      boardObjectId,
+		"owner_id": userObjectId,
+	}
+
+	var b *schema.Board
+	if err = r.collection.FindOne(ctx, filter).Decode(&b); err != nil {
+		return nil, err
+	}
+
+	return r.mapper.SchemaToEntity(b), nil
+}
+
 func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]*entity.Board, error) {
 	userObjectId, err := primitive.ObjectIDFromHex(user)
 	if err != nil {
@@ -109,15 +146,6 @@ func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]*entity
 	}
 
 	return boardsEntity, nil
-}
-
-func (r *boardRepository) GetById(ctx context.Context, id string) (*entity.Board, error) {
-	board, err := r.getById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return r.mapper.SchemaToEntity(board), nil
 }
 
 func (r *boardRepository) getById(ctx context.Context, id string) (*schema.Board, error) {

@@ -16,9 +16,7 @@ func CreateBoardUseCase(c Creator, f Finder, cs Collector) usecase.BoardUseCase 
 	return &boardUseCase{c, f, cs}
 }
 
-func (bc *boardUseCase) Create(ctx context.Context, t, d, c, bt string) (*entity.Board, error) {
-	board := &entity.Board{Title: t, Description: d, Members: []string{c}, Type: entity.BoardType(bt)}
-
+func (bc *boardUseCase) Create(ctx context.Context, board *entity.Board) (*entity.Board, error) {
 	return bc.creatorService.CreateBoard(ctx, board)
 }
 
@@ -44,6 +42,10 @@ func (bc *boardUseCase) AddUser(ctx context.Context, user *entity.User, board *e
 
 func (bc *boardUseCase) Get(ctx context.Context, id string) (*entity.Board, error) {
 	return bc.finderService.Find(ctx, id)
+}
+
+func (bc *boardUseCase) GetOneByOwner(ctx context.Context, board, user string) (*entity.Board, error) {
+	return bc.finderService.FindOneByOwner(ctx, board, user)
 }
 
 func (bc *boardUseCase) GetByUser(ctx context.Context, creator string) ([]*entity.Board, error) {

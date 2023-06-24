@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"t-board/internal/controller/http/types"
 	"t-board/internal/controller/http/validator"
+	"t-board/internal/entity"
 	"t-board/internal/usecase"
 )
 
@@ -38,7 +39,8 @@ func (r *userRouteManager) register(c echo.Context) error {
 		return err
 	}
 
-	if err := r.useCase.Register(context.Background(), u.Name, u.Email, u.Password); err != nil {
+	createUserEntity := &entity.User{Name: u.Name, Email: u.Email, Password: u.Password}
+	if err := r.useCase.Register(context.Background(), createUserEntity); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 

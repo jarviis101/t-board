@@ -7,7 +7,7 @@ import (
 
 type (
 	UserUseCase interface {
-		Register(ctx context.Context, name, email, password string) error
+		Register(ctx context.Context, user *entity.User) error
 		Login(ctx context.Context, email, password string) (string, error)
 		AddBoard(ctx context.Context, user *entity.User, board *entity.Board) error
 		DeleteBoardFromUsers(ctx context.Context, board string) error
@@ -16,11 +16,12 @@ type (
 	}
 
 	BoardUseCase interface {
-		Create(ctx context.Context, title, description, creator, boardType string) (*entity.Board, error)
+		Create(ctx context.Context, board *entity.Board) (*entity.Board, error)
 		Clear(ctx context.Context, board string) error
 		Delete(ctx context.Context, board string) error
 		AddUser(ctx context.Context, user *entity.User, board *entity.Board) error
 		Get(ctx context.Context, id string) (*entity.Board, error)
+		GetOneByOwner(ctx context.Context, board, user string) (*entity.Board, error)
 		GetByUser(ctx context.Context, creator string) ([]*entity.Board, error)
 	}
 

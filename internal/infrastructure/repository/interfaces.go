@@ -19,8 +19,9 @@ type (
 		AddUser(ctx context.Context, u *entity.User, b *entity.Board) error
 		Clear(ctx context.Context, board string) error
 		Delete(ctx context.Context, board string) error
-		GetByUser(ctx context.Context, user string) ([]*entity.Board, error)
+		GetOneByOwner(ctx context.Context, board, user string) (*entity.Board, error)
 		GetById(ctx context.Context, id string) (*entity.Board, error)
+		GetByUser(ctx context.Context, user string) ([]*entity.Board, error)
 	}
 	NoteRepository interface {
 	}

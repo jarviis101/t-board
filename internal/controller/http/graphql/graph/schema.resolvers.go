@@ -9,22 +9,30 @@ import (
 	"fmt"
 	"t-board/internal/controller/http/graphql/directives"
 	"t-board/internal/controller/http/graphql/graph/model"
+	"t-board/internal/entity"
 )
 
 // CreateBoard is the resolver for the createBoard field.
 func (r *mutationResolver) CreateBoard(ctx context.Context, input model.CreateBoard) (*model.Board, error) {
-	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
-	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
+	currentUser := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	user, err := r.userUseCase.Get(ctx, currentUser)
 	if err != nil {
 		return nil, err
 	}
 
-	board, err := r.boardUseCase.Create(ctx, input.Title, input.Description, currentUser.ID, string(input.Type))
+	creteBoardEntity := &entity.Board{
+		Title:       input.Title,
+		Description: input.Description,
+		Members:     []string{user.ID},
+		Type:        entity.BoardType(input.Type),
+		OwnerID:     user.ID,
+	}
+	board, err := r.boardUseCase.Create(ctx, creteBoardEntity)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = r.userUseCase.AddBoard(ctx, currentUser, board); err != nil {
+	if err = r.userUseCase.AddBoard(ctx, user, board); err != nil {
 		return nil, err
 	}
 
@@ -35,12 +43,13 @@ func (r *mutationResolver) CreateBoard(ctx context.Context, input model.CreateBo
 
 // AddUserToBoard is the resolver for the addUserToBoard field.
 func (r *mutationResolver) AddUserToBoard(ctx context.Context, user string, board string) (*model.Board, error) {
-	u, err := r.userUseCase.Get(ctx, user)
+	currentUser := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	b, err := r.boardUseCase.GetOneByOwner(ctx, board, currentUser)
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := r.boardUseCase.Get(ctx, board)
+	u, err := r.userUseCase.Get(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +67,8 @@ func (r *mutationResolver) AddUserToBoard(ctx context.Context, user string, boar
 
 // DeleteBoard is the resolver for the deleteBoard field.
 func (r *mutationResolver) DeleteBoard(ctx context.Context, board string) (*bool, error) {
-	b, err := r.boardUseCase.Get(ctx, board)
+	currentUser := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	b, err := r.boardUseCase.GetOneByOwner(ctx, board, currentUser)
 	if err != nil {
 		return nil, err
 	}
@@ -82,27 +92,27 @@ func (r *mutationResolver) ClearBoard(ctx context.Context, board string) (*bool,
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
-	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
+	currentUser := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	user, err := r.userUseCase.Get(ctx, currentUser)
 	if err != nil {
 		return nil, err
 	}
 
-	m := r.userTransformer.TransformToModel(currentUser)
+	m := r.userTransformer.TransformToModel(user)
 
 	return m, nil
 }
 
 // GetBoards is the resolver for the getBoards field.
 func (r *queryResolver) GetBoards(ctx context.Context) ([]*model.Board, error) {
-	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
-	currentUser, err := r.userUseCase.Get(ctx, currentUserId)
+	currentUser := ctx.Value(directives.AuthKey(directives.Key)).(string)
+	user, err := r.userUseCase.Get(ctx, currentUser)
 	if err != nil {
 		return nil, err
 	}
 
 	var boards []*model.Board
-	boardsEntity, err := r.boardUseCase.GetByUser(ctx, currentUser.ID)
+	boardsEntity, err := r.boardUseCase.GetByUser(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}

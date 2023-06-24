@@ -17,9 +17,8 @@ func CreateUserUseCase(c Creator, a AuthService, f Finder, cs Collector) usecase
 	return &userUseCase{c, a, f, cs}
 }
 
-func (uc *userUseCase) Register(ctx context.Context, name, email, password string) error {
-	userEntity := &entity.User{Name: name, Email: email, Password: password}
-	if err := uc.creatorService.CreateUser(ctx, userEntity); err != nil {
+func (uc *userUseCase) Register(ctx context.Context, user *entity.User) error {
+	if err := uc.creatorService.CreateUser(ctx, user); err != nil {
 		return err
 	}
 
