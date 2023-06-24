@@ -58,7 +58,12 @@ func (r *mutationResolver) AddUserToBoard(ctx context.Context, user string, boar
 
 // DeleteBoard is the resolver for the deleteBoard field.
 func (r *mutationResolver) DeleteBoard(ctx context.Context, board string) (*bool, error) {
-	if err := r.boardUseCase.Delete(ctx, board); err != nil {
+	b, err := r.boardUseCase.Get(ctx, board)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.boardUseCase.Delete(ctx, b.ID); err != nil {
 		return nil, err
 	}
 

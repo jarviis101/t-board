@@ -14,6 +14,7 @@ type Board struct {
 	UpdatedAt   time.Time
 	Type        BoardType
 	ID          string
+	OwnerID     string
 	Title       string
 	Description string
 	Members     []string
