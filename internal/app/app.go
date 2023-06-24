@@ -60,6 +60,7 @@ func (a *application) resolveBoardUseCase(br repository.BaseRepository, bm mappe
 	boardRepository := repository.CreateBoardRepository(br, a.database.Collection("boards"), boardMapper)
 	boardCreator := board.CreateCreator(boardRepository)
 	boardFinder := board.CreateFinder(boardRepository)
+	boardCollector := board.CreateCollector(boardRepository)
 
-	return board.CreateBoardUseCase(boardCreator, boardFinder)
+	return board.CreateBoardUseCase(boardCreator, boardFinder, boardCollector)
 }

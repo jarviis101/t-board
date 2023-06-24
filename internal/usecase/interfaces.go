@@ -18,6 +18,7 @@ type (
 		Create(ctx context.Context, title, description, creator, boardType string) (*entity.Board, error)
 		Clear(ctx context.Context, board string) error
 		Delete(ctx context.Context, board string) error
+		AddUser(ctx context.Context, user *entity.User, board *entity.Board) error
 		Get(ctx context.Context, id string) (*entity.Board, error)
 		GetByUser(ctx context.Context, creator string) ([]*entity.Board, error)
 	}

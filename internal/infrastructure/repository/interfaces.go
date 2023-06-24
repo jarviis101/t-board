@@ -15,6 +15,7 @@ type (
 	}
 	BoardRepository interface {
 		Store(ctx context.Context, b *entity.Board) (*entity.Board, error)
+		AddUser(ctx context.Context, u *entity.User, b *entity.Board) error
 		Clear(ctx context.Context, board string) error
 		Delete(ctx context.Context, board string)
 		GetByUser(ctx context.Context, user string) ([]*entity.Board, error)

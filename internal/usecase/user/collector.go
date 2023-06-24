@@ -7,7 +7,7 @@ import (
 )
 
 type Collector interface {
-	AddBoardForUser(ctx context.Context, u *entity.User, b *entity.Board) error
+	AddBoardToUser(ctx context.Context, u *entity.User, b *entity.Board) error
 }
 
 type collector struct {
@@ -18,7 +18,7 @@ func CreateCollector(r repository.UserRepository) Collector {
 	return &collector{r}
 }
 
-func (c *collector) AddBoardForUser(ctx context.Context, u *entity.User, b *entity.Board) error {
+func (c *collector) AddBoardToUser(ctx context.Context, u *entity.User, b *entity.Board) error {
 	if err := c.repository.AddBoard(ctx, u, b); err != nil {
 		return err
 	}

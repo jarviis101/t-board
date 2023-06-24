@@ -33,6 +33,39 @@ func (r *mutationResolver) CreateBoard(ctx context.Context, input model.CreateBo
 	return m, nil
 }
 
+// AddUserToBoard is the resolver for the addUserToBoard field.
+func (r *mutationResolver) AddUserToBoard(ctx context.Context, user string, board string) (*model.Board, error) {
+	u, err := r.userUseCase.Get(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := r.boardUseCase.Get(ctx, board)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.userUseCase.AddBoard(ctx, u, b); err != nil {
+		return nil, err
+	}
+
+	if err := r.boardUseCase.AddUser(ctx, u, b); err != nil {
+		return nil, err
+	}
+
+	return r.boardTransformer.TransformToModel(b), nil
+}
+
+// DeleteBoard is the resolver for the deleteBoard field.
+func (r *mutationResolver) DeleteBoard(ctx context.Context, board string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteBoard - deleteBoard"))
+}
+
+// ClearBoard is the resolver for the clearBoard field.
+func (r *mutationResolver) ClearBoard(ctx context.Context, board string) (*bool, error) {
+	panic(fmt.Errorf("not implemented: ClearBoard - clearBoard"))
+}
+
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	currentUserId := ctx.Value(directives.AuthKey(directives.Key)).(string)
@@ -67,6 +100,11 @@ func (r *queryResolver) GetBoards(ctx context.Context) ([]*model.Board, error) {
 	}
 
 	return boards, nil
+}
+
+// GetBoard is the resolver for the getBoard field.
+func (r *queryResolver) GetBoard(ctx context.Context, board string) (*model.Board, error) {
+	panic(fmt.Errorf("not implemented: GetBoard - getBoard"))
 }
 
 // GetNotesByBoard is the resolver for the getNotesByBoard field.

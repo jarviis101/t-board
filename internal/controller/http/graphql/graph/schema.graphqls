@@ -35,6 +35,7 @@ type Note {
 type Query {
   me: User! @auth
   getBoards: [Board]! @auth
+  getBoard(board: String!): Board! @auth
   getNotesByBoard(board: String!): [Note]! @auth
 }
 
@@ -46,5 +47,8 @@ input CreateBoard {
 
 type Mutation {
   createBoard(input: CreateBoard!): Board! @auth
+  addUserToBoard(user: String!, board: String!): Board @auth
+  deleteBoard(board: String!): Boolean @auth
+  clearBoard(board: String!): Boolean @auth
 }
 

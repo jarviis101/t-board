@@ -40,6 +40,27 @@ func (r *boardRepository) Store(ctx context.Context, b *entity.Board) (*entity.B
 	return r.mapper.SchemaToEntity(board), nil
 }
 
+func (r *boardRepository) AddUser(ctx context.Context, u *entity.User, b *entity.Board) error {
+	boardObjectId, err := primitive.ObjectIDFromHex(b.ID)
+	if err != nil {
+		return err
+	}
+	userObjectId, err := primitive.ObjectIDFromHex(u.ID)
+	if err != nil {
+		return err
+	}
+
+	members := append(r.fromStringToObjectId(b.Members), userObjectId)
+	filter := bson.M{"_id": boardObjectId}
+	update := bson.M{"$set": bson.M{"members": members}}
+	_, err = r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]*entity.Board, error) {
 	userObjectId, err := primitive.ObjectIDFromHex(user)
 	if err != nil {

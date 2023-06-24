@@ -36,7 +36,7 @@ func (uc *userUseCase) Login(ctx context.Context, email, password string) (strin
 }
 
 func (uc *userUseCase) AddBoard(ctx context.Context, user *entity.User, board *entity.Board) error {
-	if err := uc.collectorService.AddBoardForUser(ctx, user, board); err != nil {
+	if err := uc.collectorService.AddBoardToUser(ctx, user, board); err != nil {
 		return err
 	}
 

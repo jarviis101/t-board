@@ -7,24 +7,17 @@ import (
 )
 
 type boardUseCase struct {
-	creatorService Creator
-	finderService  Finder
+	creatorService   Creator
+	finderService    Finder
+	collectorService Collector
 }
 
-func CreateBoardUseCase(c Creator, f Finder) usecase.BoardUseCase {
-	return &boardUseCase{c, f}
+func CreateBoardUseCase(c Creator, f Finder, cs Collector) usecase.BoardUseCase {
+	return &boardUseCase{c, f, cs}
 }
 
-func (bc *boardUseCase) Create(
-	ctx context.Context,
-	title, description, creator, boardType string,
-) (*entity.Board, error) {
-	board := &entity.Board{
-		Title:       title,
-		Description: description,
-		Members:     []string{creator},
-		Type:        entity.BoardType(boardType),
-	}
+func (bc *boardUseCase) Create(ctx context.Context, t, d, c, bt string) (*entity.Board, error) {
+	board := &entity.Board{Title: t, Description: d, Members: []string{c}, Type: entity.BoardType(bt)}
 
 	return bc.creatorService.CreateBoard(ctx, board)
 }
@@ -34,6 +27,14 @@ func (bc *boardUseCase) Clear(ctx context.Context, board string) error {
 }
 
 func (bc *boardUseCase) Delete(ctx context.Context, board string) error {
+	return nil
+}
+
+func (bc *boardUseCase) AddUser(ctx context.Context, user *entity.User, board *entity.Board) error {
+	if err := bc.collectorService.AddUserToBoard(ctx, user, board); err != nil {
+		return err
+	}
+
 	return nil
 }
 
