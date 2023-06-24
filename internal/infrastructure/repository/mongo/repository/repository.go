@@ -1,11 +1,7 @@
 package repository
 
 import (
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type BaseRepository struct {
@@ -29,19 +25,19 @@ func (br *BaseRepository) fromStringToObjectId(ids []string) []primitive.ObjectI
 	return objectIds
 }
 
-func (br *BaseRepository) removeElementFromFieldArray(
-	ctx context.Context,
-	collection *mongo.Collection,
-	filter bson.M,
-	fieldName string,
-	element primitive.ObjectID,
-) error {
-	update := bson.M{
-		"$pull": bson.M{fieldName: element},
-	}
-	_, err := collection.UpdateMany(ctx, filter, update, options.Update().SetUpsert(false))
-	if err != nil {
-		return err
-	}
-	return nil
-}
+//func (br *BaseRepository) removeElementFromFieldArray(
+//	ctx context.Context,
+//	collection *mongo.Collection,
+//	filter bson.M,
+//	fieldName string,
+//	element primitive.ObjectID,
+//) error {
+//	update := bson.M{
+//		"$pull": bson.M{fieldName: element},
+//	}
+//	_, err := collection.UpdateMany(ctx, filter, update, options.Update().SetUpsert(false))
+//	if err != nil {
+//		return err
+//	}
+//	return nil
+//}
