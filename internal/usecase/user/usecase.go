@@ -43,6 +43,14 @@ func (uc *userUseCase) AddBoard(ctx context.Context, user *entity.User, board *e
 	return nil
 }
 
+func (uc *userUseCase) DeleteBoardFromUsers(ctx context.Context, board string) error {
+	if err := uc.collectorService.DeleteBoardFromUsers(ctx, board); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (uc *userUseCase) Get(ctx context.Context, id string) (*entity.User, error) {
 	return uc.finderService.Find(ctx, id)
 }

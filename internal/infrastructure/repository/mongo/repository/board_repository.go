@@ -61,6 +61,24 @@ func (r *boardRepository) AddUser(ctx context.Context, u *entity.User, b *entity
 	return nil
 }
 
+func (r *boardRepository) Clear(ctx context.Context, board string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *boardRepository) Delete(ctx context.Context, board string) error {
+	boardObjectId, err := primitive.ObjectIDFromHex(board)
+	if err != nil {
+		return nil
+	}
+
+	if _, err := r.collection.DeleteOne(ctx, bson.M{"_id": boardObjectId}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]*entity.Board, error) {
 	userObjectId, err := primitive.ObjectIDFromHex(user)
 	if err != nil {
@@ -91,16 +109,6 @@ func (r *boardRepository) GetByUser(ctx context.Context, user string) ([]*entity
 	}
 
 	return boardsEntity, nil
-}
-
-func (r *boardRepository) Clear(ctx context.Context, board string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r *boardRepository) Delete(ctx context.Context, board string) {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (r *boardRepository) GetById(ctx context.Context, id string) (*entity.Board, error) {

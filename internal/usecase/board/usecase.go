@@ -27,6 +27,10 @@ func (bc *boardUseCase) Clear(ctx context.Context, board string) error {
 }
 
 func (bc *boardUseCase) Delete(ctx context.Context, board string) error {
+	if err := bc.collectorService.DeleteBoard(ctx, board); err != nil {
+		return err
+	}
+
 	return nil
 }
 

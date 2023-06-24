@@ -10,6 +10,7 @@ type (
 		Register(ctx context.Context, name, email, password string) error
 		Login(ctx context.Context, email, password string) (string, error)
 		AddBoard(ctx context.Context, user *entity.User, board *entity.Board) error
+		DeleteBoardFromUsers(ctx context.Context, board string) error
 		Get(ctx context.Context, id string) (*entity.User, error)
 		GetMany(ctx context.Context, ids []string) ([]*entity.User, error)
 	}
