@@ -6,6 +6,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"t-board/internal/controller"
 	"t-board/internal/controller/http/graphql/directives"
 	"t-board/internal/controller/http/graphql/graph"
 	"t-board/internal/controller/http/graphql/transformers"
@@ -14,10 +15,6 @@ import (
 	"t-board/internal/usecase"
 	"t-board/pkg"
 )
-
-type Http interface {
-	Run() error
-}
 
 type http struct {
 	serverConfig     pkg.Server
@@ -29,7 +26,12 @@ type http struct {
 	echo             *echo.Echo
 }
 
-func CreateServer(sc pkg.Server, v *validator.Validator, u usecase.UserUseCase, b usecase.BoardUseCase) Http {
+func CreateServer(
+	sc pkg.Server,
+	v *validator.Validator,
+	u usecase.UserUseCase,
+	b usecase.BoardUseCase,
+) controller.Server {
 	e := echo.New()
 	e.Validator = v
 	e.Use(middleware.Logger())
@@ -49,7 +51,7 @@ func CreateServer(sc pkg.Server, v *validator.Validator, u usecase.UserUseCase, 
 	}
 }
 
-func (h *http) Run() error {
+func (h *http) RunServer() error {
 	e := echo.New()
 
 	h.appendRestRoutes(e)
