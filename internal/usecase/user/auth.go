@@ -31,6 +31,7 @@ func (s *authService) Authenticate(ctx context.Context, email, password string) 
 	if err != nil {
 		return "", errors.New("Bad credentials")
 	}
+
 	if !s.hasher.ComparePassword(password, user.Password) {
 		return "", errors.New("Bad credentials")
 	}

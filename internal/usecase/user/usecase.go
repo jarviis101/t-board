@@ -18,36 +18,19 @@ func CreateUserUseCase(c Creator, a AuthService, f Finder, cs Collector) usecase
 }
 
 func (uc *userUseCase) Register(ctx context.Context, user *entity.User) error {
-	if err := uc.creatorService.CreateUser(ctx, user); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.creatorService.CreateUser(ctx, user)
 }
 
 func (uc *userUseCase) Login(ctx context.Context, email, password string) (string, error) {
-	token, err := uc.authService.Authenticate(ctx, email, password)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
+	return uc.authService.Authenticate(ctx, email, password)
 }
 
 func (uc *userUseCase) AddBoard(ctx context.Context, user *entity.User, board *entity.Board) error {
-	if err := uc.collectorService.AddBoardToUser(ctx, user, board); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.collectorService.AddBoardToUser(ctx, user, board)
 }
 
 func (uc *userUseCase) DeleteBoardFromUsers(ctx context.Context, board string) error {
-	if err := uc.collectorService.DeleteBoardFromUsers(ctx, board); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.collectorService.DeleteBoardFromUsers(ctx, board)
 }
 
 func (uc *userUseCase) Get(ctx context.Context, id string) (*entity.User, error) {

@@ -22,9 +22,6 @@ func CreateCreator(r repository.UserRepository, h hasher.Manager) Creator {
 
 func (c *creator) CreateUser(ctx context.Context, user *entity.User) error {
 	user.Password = c.hasher.HashPassword(user.Password)
-	if err := c.repository.Store(ctx, user); err != nil {
-		return err
-	}
 
-	return nil
+	return c.repository.Store(ctx, user)
 }

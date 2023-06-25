@@ -25,19 +25,11 @@ func (bc *boardUseCase) Clear(ctx context.Context, board string) error {
 }
 
 func (bc *boardUseCase) Delete(ctx context.Context, board string) error {
-	if err := bc.collectorService.DeleteBoard(ctx, board); err != nil {
-		return err
-	}
-
-	return nil
+	return bc.collectorService.DeleteBoard(ctx, board)
 }
 
 func (bc *boardUseCase) AddUser(ctx context.Context, user *entity.User, board *entity.Board) error {
-	if err := bc.collectorService.AddUserToBoard(ctx, user, board); err != nil {
-		return err
-	}
-
-	return nil
+	return bc.collectorService.AddUserToBoard(ctx, user, board)
 }
 
 func (bc *boardUseCase) Get(ctx context.Context, id string) (*entity.Board, error) {

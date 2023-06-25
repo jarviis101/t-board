@@ -33,15 +33,17 @@ func (a *application) Run() error {
 
 	baseRepository := repository.CreateBaseRepository()
 	baseMapper := mapper.CreateBaseMapper()
-	boardUseCase := a.resolveBoardUseCase(baseRepository, baseMapper)
-	userUseCase := a.resolveUserUseCase(baseRepository, baseMapper)
+	boardUseCase := a.resolveBoardUseCaseDependencies(baseRepository, baseMapper)
+	userUseCase := a.resolveUserUseCaseDependencies(baseRepository, baseMapper)
 
-	http.RunServer(httpValidator, a.serverConfig, userUseCase, boardUseCase)
-
-	return nil
+	httpServer := http.CreateServer(a.serverConfig, httpValidator, userUseCase, boardUseCase)
+	return httpServer.Run()
 }
 
-func (a *application) resolveUserUseCase(br repository.BaseRepository, bm mapper.BaseMapper) usecase.UserUseCase {
+func (a *application) resolveUserUseCaseDependencies(
+	br repository.BaseRepository,
+	bm mapper.BaseMapper,
+) usecase.UserUseCase {
 	h := hasher.CreateManager()
 	jwtManager := jwt.CreateManager(a.serverConfig.Secret)
 
@@ -55,7 +57,10 @@ func (a *application) resolveUserUseCase(br repository.BaseRepository, bm mapper
 	return user.CreateUserUseCase(userCreator, userAuthService, userFinder, userCollector)
 }
 
-func (a *application) resolveBoardUseCase(br repository.BaseRepository, bm mapper.BaseMapper) usecase.BoardUseCase {
+func (a *application) resolveBoardUseCaseDependencies(
+	br repository.BaseRepository,
+	bm mapper.BaseMapper,
+) usecase.BoardUseCase {
 	boardMapper := mapper.CreateBoardMapper(bm)
 	boardRepository := repository.CreateBoardRepository(br, a.database.Collection("boards"), boardMapper)
 	boardCreator := board.CreateCreator(boardRepository)

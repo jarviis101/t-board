@@ -20,17 +20,9 @@ func CreateCollector(r repository.UserRepository) Collector {
 }
 
 func (c *collector) AddBoardToUser(ctx context.Context, u *entity.User, b *entity.Board) error {
-	if err := c.repository.AddBoard(ctx, u, b); err != nil {
-		return err
-	}
-
-	return nil
+	return c.repository.AddBoard(ctx, u, b)
 }
 
 func (c *collector) DeleteBoardFromUsers(ctx context.Context, board string) error {
-	if err := c.repository.DeleteBoard(ctx, board); err != nil {
-		return err
-	}
-
-	return nil
+	return c.repository.DeleteBoard(ctx, board)
 }

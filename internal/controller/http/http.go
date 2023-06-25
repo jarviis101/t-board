@@ -15,37 +15,65 @@ import (
 	"t-board/pkg"
 )
 
-func RunServer(v *validator.Validator, sc pkg.Server, u usecase.UserUseCase, b usecase.BoardUseCase) {
+type Http interface {
+	Run() error
+}
+
+type http struct {
+	serverConfig     pkg.Server
+	validator        *validator.Validator
+	userUseCase      usecase.UserUseCase
+	boardUseCase     usecase.BoardUseCase
+	userTransformer  transformers.UserTransformer
+	boardTransformer transformers.BoardTransformer
+	echo             *echo.Echo
+}
+
+func CreateServer(sc pkg.Server, v *validator.Validator, u usecase.UserUseCase, b usecase.BoardUseCase) Http {
 	e := echo.New()
 	e.Validator = v
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	collectRESTRoutes(e, v, u)
-	collectGraphQLRoutes(e, sc, u, b)
+	baseTransformer := transformers.CreateBaseTransformer()
+	ut := transformers.CreateUserTransformer(baseTransformer)
+	bt := transformers.CreateBoardTransformer(baseTransformer)
 
-	host := fmt.Sprintf(":%s", sc.Port)
-	e.Logger.Fatal(e.Start(host))
+	return &http{
+		serverConfig:     sc,
+		validator:        v,
+		userUseCase:      u,
+		boardUseCase:     b,
+		userTransformer:  ut,
+		boardTransformer: bt,
+	}
 }
 
-func collectRESTRoutes(e *echo.Echo, v *validator.Validator, u usecase.UserUseCase) {
+func (h *http) Run() error {
+	e := echo.New()
+
+	h.appendRestRoutes(e)
+	h.appendGraphqlRoutes(e)
+
+	host := fmt.Sprintf(":%s", h.serverConfig.Port)
+	return h.echo.Start(host)
+}
+
+func (h *http) appendRestRoutes(e *echo.Echo) {
 	authGroup := e.Group("/api/auth")
-	userRouter := router.CreateUserRouteManager(authGroup, v, u)
+	userRouter := router.CreateUserRouteManager(authGroup, h.validator, h.userUseCase)
+
 	userRouter.PopulateRoutes()
 }
 
-func collectGraphQLRoutes(e *echo.Echo, sc pkg.Server, u usecase.UserUseCase, b usecase.BoardUseCase) {
-	baseTransformer := transformers.CreateBaseTransformer()
-	userTransformer := transformers.CreateUserTransformer(baseTransformer)
-	boardTransformer := transformers.CreateBoardTransformer(baseTransformer)
-
-	resolver := graph.CreateResolver(u, b, userTransformer, boardTransformer)
+func (h *http) appendGraphqlRoutes(e *echo.Echo) {
+	resolver := graph.CreateResolver(h.userUseCase, h.boardUseCase, h.userTransformer, h.boardTransformer)
 	c := graph.Config{Resolvers: resolver}
 	c.Directives.Auth = directives.Auth
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(c))
 	pg := playground.Handler("GraphQL playground", "/query")
 
-	graphqlGroup := e.Group("")
-	graphqlRouter := router.CreateGraphqlRouterManager(graphqlGroup, srv, pg, sc)
+	graphqlRouter := router.CreateGraphqlRouterManager(e.Group(""), srv, pg, h.serverConfig)
+
 	graphqlRouter.PopulateRoutes()
 }
