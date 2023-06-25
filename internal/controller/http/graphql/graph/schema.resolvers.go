@@ -36,9 +36,7 @@ func (r *mutationResolver) CreateBoard(ctx context.Context, input model.CreateBo
 		return nil, err
 	}
 
-	m := r.boardTransformer.TransformToModel(board)
-
-	return m, nil
+	return r.boardTransformer.TransformToModel(board), nil
 }
 
 // AddUserToBoard is the resolver for the addUserToBoard field.
