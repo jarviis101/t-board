@@ -10,10 +10,6 @@ import (
 	"t-board/internal/usecase"
 )
 
-type RouteManager interface {
-	PopulateRoutes()
-}
-
 type userRouteManager struct {
 	group     *echo.Group
 	validator *validator.Validator

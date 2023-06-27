@@ -9,17 +9,38 @@ import (
 	"log"
 	"net/http"
 	"t-board/internal/controller"
+	"t-board/internal/controller/ws/manager"
+	"t-board/internal/usecase"
 )
 
 type ws struct {
+	userUseCase  usecase.UserUseCase
+	boardUseCase usecase.BoardUseCase
 }
 
-func CreateWSServer() controller.Server {
-	return &ws{}
+func CreateWSServer(u usecase.UserUseCase, b usecase.BoardUseCase) controller.Server {
+	return &ws{u, b}
 }
 
 func (s *ws) RunServer() error {
-	so := socketio.NewServer(&engineio.Options{
+	so := s.createServer()
+
+	eventManager := manager.CreateEventManager(so, s.userUseCase, s.boardUseCase)
+	eventManager.PopulateEvents()
+
+	go func() {
+		if err := so.Serve(); err != nil {
+			log.Printf("Error: %s\n", err.Error())
+		}
+	}()
+
+	http.Handle("/socket.io/", so)
+
+	return http.ListenAndServe(":5000", nil)
+}
+
+func (s *ws) createServer() *socketio.Server {
+	return socketio.NewServer(&engineio.Options{
 		Transports: []transport.Transport{
 			&polling.Transport{
 				CheckOrigin: func(r *http.Request) bool {
@@ -33,46 +54,4 @@ func (s *ws) RunServer() error {
 			},
 		},
 	})
-
-	so.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		log.Println("connected:", s.ID())
-
-		return nil
-	})
-	type Message struct {
-		Msg string `json:"msg"`
-	}
-	so.OnEvent("/", "notice", func(s socketio.Conn, msg Message) {
-		log.Println("notice:", msg)
-		s.Emit("reply", "have "+msg.Msg)
-	})
-
-	so.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		if err := s.Close(); err != nil {
-			return ""
-		}
-		return last
-	})
-
-	so.OnError("/", func(s socketio.Conn, e error) {
-		log.Println("meet error:", e)
-	})
-
-	so.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		log.Println("closed", reason)
-	})
-
-	go func() {
-		if err := so.Serve(); err != nil {
-			log.Fatalf("Error: %s", err.Error())
-		}
-	}()
-
-	http.Handle("/socket.io/", so)
-	log.Fatal(http.ListenAndServe(":5000", nil))
-
-	return nil
 }
