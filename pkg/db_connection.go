@@ -16,6 +16,10 @@ func CreateDatabaseConnection(ctx context.Context, cfg Database) *mongo.Database
 	return db.openConnection(ctx, cfg)
 }
 
+func CloseConnection(client *mongo.Client) error {
+	return client.Disconnect(context.Background())
+}
+
 func (d *database) openConnection(ctx context.Context, cfg Database) *mongo.Database {
 	d.resolveClient(ctx, cfg)
 	return d.client.Database(cfg.Name)
