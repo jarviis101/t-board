@@ -48,14 +48,13 @@ func CreateServer(
 		boardUseCase:     b,
 		userTransformer:  ut,
 		boardTransformer: bt,
+		echo:             e,
 	}
 }
 
 func (h *http) RunServer() error {
-	e := echo.New()
-
-	h.appendRestRoutes(e)
-	h.appendGraphqlRoutes(e)
+	h.appendRestRoutes(h.echo)
+	h.appendGraphqlRoutes(h.echo)
 
 	host := fmt.Sprintf(":%s", h.serverConfig.Port)
 	return h.echo.Start(host)
